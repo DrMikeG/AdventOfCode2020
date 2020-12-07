@@ -80,10 +80,9 @@ class TestStringMethods(unittest.TestCase):
         struct[('dark' ,'blue')]= [(2,'dark','violet')]
         struct[('dark' ,'violet')]= [(0,'','')]
         stack = [('shiny','gold')]
-        bagCount = -1
-        followPathLookingFor(struct,stack,'',bagCount)
+        bagCount = followPathLookingFor(struct,stack)
         print(bagCount)
-        self.assertEqual(126,bagCount)
+        self.assertEqual(127,bagCount)
 
 
 if __name__ == '__main__':

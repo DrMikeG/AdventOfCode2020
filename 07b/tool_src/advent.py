@@ -67,19 +67,15 @@ def processInputFile(filePath):
 
 
 
-def followPathLookingFor(struct,stack,targetBag,bagCount):
+def followPathLookingFor(struct,stack):
     
     #is the stack empty?
     if (len(stack) == 0):
-        return False
+        return 0
     
-    #is the final thing on the stack targetBag?
-    if (stack[-1] == targetBag):
-        return True
-
     # remove the final thing from stack
     expanding = stack.pop(-1)
-    bagCount = bagCount + 1
+    returnCount = 1
     # expanding is rule (1,'a','b')
     
     if ( expanding not in struct):
@@ -91,12 +87,14 @@ def followPathLookingFor(struct,stack,targetBag,bagCount):
         assert len(rule) == 3, "Rules does not have three parts: %s" %(rule)
         ruleN = rule[0]
         ruleKey = (rule[1],rule[2])
+        littleStack = []
         for _ in range(ruleN):
-            stack.append(ruleKey)
-            #print("adding %s" %(list(ruleKey)))
+            littleStack.append(ruleKey)
+        returnCount = returnCount + followPathLookingFor(struct,littleStack)
 
-    print(stack)
-    return followPathLookingFor(struct,stack,targetBag,bagCount)
+    returnCount = returnCount + followPathLookingFor(struct,stack)
+    #print(stack)
+    return returnCount
 
 
 def processStruct(struct):
@@ -108,9 +106,9 @@ def processStruct(struct):
     startingBag = ('shiny','gold')
     stack = []
     stack.append(startingBag)
-    followPathLookingFor(struct,stack,('shiny','gold'),bagCount)
+    bagCount = followPathLookingFor(struct,stack)
 
-    print(bagCount)
+    print(bagCount-1)
 
 def getInputPath():
     return os.path.join(os.path.dirname(__file__),"requirements.txt")
