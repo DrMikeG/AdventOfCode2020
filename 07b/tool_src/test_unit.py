@@ -72,20 +72,19 @@ class TestStringMethods(unittest.TestCase):
 
     def test_followPathLookingFor_01(self):
         struct = {}
-        struct[('a','a')] = [(1,'b','b')]
-        struct[('b','b')] = [(1,'c','c')]
-        struct[('c','c')] = [(0,'','')]
-        stack = [('a','a')]
-        self.assertTrue(followPathLookingFor(struct,stack,('c','c')))
+        struct[('shiny','gold')]= [(2,'dark','red')]
+        struct[('dark' ,'red')]= [(2,'dark','orange')]
+        struct[('dark' ,'orange')]= [(2,'dark','yellow')]
+        struct[('dark' ,'yellow')]= [(2,'dark','green')]
+        struct[('dark' ,'green')]= [(2,'dark','blue')]
+        struct[('dark' ,'blue')]= [(2,'dark','violet')]
+        struct[('dark' ,'violet')]= [(0,'','')]
+        stack = [('shiny','gold')]
+        bagCount = -1
+        followPathLookingFor(struct,stack,'',bagCount)
+        print(bagCount)
+        self.assertEqual(126,bagCount)
 
-    def test_followPathLookingFor_02(self):
-        struct = {}
-        struct[('a','a')] = [(1,'b','b')]
-        struct[('b','b')] = [(1,'c','c')]
-        struct[('c','c')] = [(0,'','')]
-        stack = [('a','a')]
-        self.assertFalse(followPathLookingFor(struct,stack,('d','d')))
-    
 
 if __name__ == '__main__':
     unittest.main()

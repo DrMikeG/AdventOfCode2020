@@ -66,17 +66,20 @@ def processInputFile(filePath):
     return struct
 
 
-def followPathLookingFor(struct,stack,targetBag):
+
+def followPathLookingFor(struct,stack,targetBag,bagCount):
     
     #is the stack empty?
     if (len(stack) == 0):
         return False
+    
     #is the final thing on the stack targetBag?
     if (stack[-1] == targetBag):
         return True
 
     # remove the final thing from stack
     expanding = stack.pop(-1)
+    bagCount = bagCount + 1
     # expanding is rule (1,'a','b')
     
     if ( expanding not in struct):
@@ -88,32 +91,26 @@ def followPathLookingFor(struct,stack,targetBag):
         assert len(rule) == 3, "Rules does not have three parts: %s" %(rule)
         ruleN = rule[0]
         ruleKey = (rule[1],rule[2])
-        #for i in range(ruleN):
-        if (ruleN > 0 and ruleKey not in stack):
+        for _ in range(ruleN):
             stack.append(ruleKey)
+            #print("adding %s" %(list(ruleKey)))
 
-    return followPathLookingFor(struct,stack,targetBag)
+    print(stack)
+    return followPathLookingFor(struct,stack,targetBag,bagCount)
+
 
 def processStruct(struct):
     # You have a shiny gold bag.
     # If you wanted to carry it in at least one other bag, how many different bag colors would be valid for the outermost bag? 
     # (In other words: how many colors can, eventually, contain at least one shiny gold bag?)
 
-    countOfStartingColours = 0
+    bagCount = 0
+    startingBag = ('shiny','gold')
+    stack = []
+    stack.append(startingBag)
+    followPathLookingFor(struct,stack,('shiny','gold'),bagCount)
 
-    for startingBag in struct:
-        stack = []
-        if (startingBag != ('shiny','gold')):
-            stack.append(startingBag)
-            if followPathLookingFor(struct,stack,('shiny','gold')) : 
-                print("Shiny gold bag can go within %s"%(list(startingBag)))
-                countOfStartingColours = countOfStartingColours + 1
-            else :
-                print("Shiny gold bag cannot go within %s"%(list(startingBag)))
-
-    # < 316
-
-    print(countOfStartingColours)
+    print(bagCount)
 
 def getInputPath():
     return os.path.join(os.path.dirname(__file__),"requirements.txt")
