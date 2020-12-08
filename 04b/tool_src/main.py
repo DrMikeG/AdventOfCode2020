@@ -3,26 +3,10 @@ import turtle
 from random import randint
 from time import sleep
 
-#initialise empty 9 by 9 grid
-grid = []
-grid.append([5, 0, 0, 3, 0, 0, 0, 0, 0])
-grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-grid.append([7, 0, 0, 0, 0, 0, 0, 0, 0])
-grid.append([0, 0, 0, 0, 0, 8, 0, 0, 0])
-grid.append([0, 0, 1, 0, 0, 0, 2, 0, 0])
-grid.append([0, 0, 0, 5, 0, 0, 0, 0, 0])
-grid.append([0, 0, 0, 0, 0, 0, 0, 0, 3])
-grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-grid.append([0, 0, 0, 0, 0, 3, 0, 0, 9])
-
 myPen = turtle.Turtle()
-turtle.tracer(0)
-#myPen.tracer(0)
-myPen.speed(0)
-myPen.color("#000000")
-myPen.hideturtle()
 topLeft_x=-150
 topLeft_y=150
+
 
 def text(message,x,y,size):
     FONT = ('Arial', size, 'normal')
@@ -238,6 +222,11 @@ def gridValue(grid,gridCell):
   return grid[row][col]
 
 def checkSnake(grid,walk):
+  # For a position on walk
+  # only the next position and the previous position may be within 1 square
+
+  # For each grey square, count the number of snake tiles in the surrounding 8 squares
+  # this should equal the value in the grey square
   return True
 
 def solvePalendromeWalk(grid,walk):
@@ -255,15 +244,21 @@ def solvePalendromeWalk(grid,walk):
     # There are 4 positions around snakeA and 4 positions around snakeB
     for r1 in [-1,0,1]:
       for c1 in [-1,0,1]:
-        for r2 in [-1,0,1]:
-          for c2 in [-1,0,1]:
-            nextSnakeA = (snakeA[0]+r1,snakeA[1]+c1)
-            nextSnakeB = (snakeB[0]+r2,snakeB[1]+c2)
-            if (canUseGridCell(nextSnakeA,walk) and canUseGridCell(nextSnakeB,walk)):
-              if (gridValue(grid,nextSnakeA) == gridValue(grid,nextSnakeB)):
-                walk.append((nextSnakeA,nextSnakeB))
-                if not solvePalendromeWalk(grid,walk):
-                   walk.pop(-1)
+        # don't allow the diagonals
+        if (abs(r1) + abs(c1) < 2):
+          for r2 in [-1,0,1]:
+            for c2 in [-1,0,1]:
+              # don't allow the diagonals
+              if (abs(r2) + abs(c2) < 2):
+                nextSnakeA = (snakeA[0]+r1,snakeA[1]+c1)
+                nextSnakeB = (snakeB[0]+r2,snakeB[1]+c2)
+                if (canUseGridCell(nextSnakeA,walk) and canUseGridCell(nextSnakeB,walk)):
+                  gridCellA = gridValue(grid,nextSnakeA)
+                  gridCellB = gridValue(grid,nextSnakeB)
+                  if (gridCellA == gridCellB):
+                    walk.append((nextSnakeA,nextSnakeB))
+                    if not solvePalendromeWalk(grid,walk):
+                      walk.pop(-1)
 
     return False
 
@@ -280,25 +275,6 @@ def checkGrid(grid):
       return False
 
   print("Suduku solution - looking for snake")
-
-  numbersAroundStart = []
-  numbersAroundEnd = []
-  snakeA = (4,0)
-  snakeB = (7,1)
-  walk = [(snakeA,snakeB)]
-  for r1 in [-1,0,1]:
-      for c1 in [-1,0,1]:
-        for r2 in [-1,0,1]:
-          for c2 in [-1,0,1]:
-            nextSnakeA = (snakeA[0]+r1,snakeA[1]+c1)
-            nextSnakeB = (snakeB[0]+r2,snakeB[1]+c2)
-            if canUseGridCell(nextSnakeA,walk):
-              numbersAroundStart.append(gridValue(grid,nextSnakeA))
-            if canUseGridCell(nextSnakeB,walk):
-              numbersAroundEnd.append(gridValue(grid,nextSnakeB))
-  
-  print(numbersAroundStart.sort())
-  print(numbersAroundEnd.sort())
 
   # Testing walk 
   walk = []
@@ -373,21 +349,45 @@ def solveGrid(grid):
   grid[row][col]=0  
   
   
-drawGrid(grid,[]) 
-myPen.getscreen().update()
-sleep(1)
 
-solved = solveGrid(grid)
-if solved:
-  print("Sudoku Grid Solved")
-  text("Sudoku Grid Solved",-110,-190,20)
-  myPen.clear()
+def mainTask():
+  #initialise empty 9 by 9 grid
+  grid = []
+  grid.append([5, 0, 0, 3, 0, 0, 0, 0, 0])
+  grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+  grid.append([7, 0, 0, 0, 0, 0, 0, 0, 0])
+  grid.append([0, 0, 0, 0, 0, 8, 0, 0, 0])
+  grid.append([0, 0, 1, 0, 0, 0, 2, 0, 0])
+  grid.append([0, 0, 0, 5, 0, 0, 0, 0, 0])
+  grid.append([0, 0, 0, 0, 0, 0, 0, 0, 3])
+  grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+  grid.append([0, 0, 0, 0, 0, 3, 0, 0, 9])
+
+  turtle.tracer(0)
+  #myPen.tracer(0)
+  myPen.speed(0)
+  myPen.color("#000000")
+  myPen.hideturtle()
+
   drawGrid(grid,[]) 
-  myPen.getscreen().update()           
-  #sleep(50000)
-  
-else:  
-  print("Cannot Solve Sudoku Grid")
-  text("Cannot Solve Sudoku Grid",-130,-190,20)
+  myPen.getscreen().update()
+  sleep(1)
 
-myPen.getscreen().update()
+  solved = solveGrid(grid)
+  if solved:
+    print("Sudoku Grid Solved")
+    text("Sudoku Grid Solved",-110,-190,20)
+    myPen.clear()
+    drawGrid(grid,[]) 
+    myPen.getscreen().update()           
+    #sleep(50000)
+    
+  else:  
+    print("Cannot Solve Sudoku Grid")
+    text("Cannot Solve Sudoku Grid",-130,-190,20)
+
+  myPen.getscreen().update()
+
+if __name__ == "__main__":
+
+    mainTask()
