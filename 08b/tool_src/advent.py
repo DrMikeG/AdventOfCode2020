@@ -133,7 +133,7 @@ def mainTask():
     #processStruct(struct)
 
     jmps = indicesOfJmps(struct)
-    #nops = indicesOfNops(struct)
+    nops = indicesOfNops(struct)
 
     for jump in jmps :
         newStruct = processInputFile(input_path)
@@ -142,12 +142,12 @@ def mainTask():
         if processStruct(newStruct) : 
             break
     
-    #for nop in nops :
-    #    newStruct = processInputFile(input_path)
-    #    changeOperation(newStruct,nop)
-    #    assert newStruct != struct
-    #    if processStruct(newStruct) : 
-    #        break
+    for nop in nops :
+        newStruct = processInputFile(input_path)
+        changeOperation(newStruct,nop)
+        assert newStruct != struct
+        if processStruct(newStruct) : 
+            break
 
 if __name__ == "__main__":
 

@@ -203,6 +203,42 @@ def walkWestAndRecurse(grid,walk):
     
     return False # this was a mistep
 
+def isGridCellOnWalkAlready(walk,gridCell):
+    for p in walk:
+      if p[0] == gridCell:
+        return True
+      if p[1] == gridCell:
+        return True
+    return False
+
+def isGridCellOnGrid(gridCell):
+  (row,col) = gridCell
+  if (row > 8 or row < 0 ):
+    return False
+  if (col > 8 or col < 0 ):
+    return False
+  return True
+
+def isGreyCell(gridCell):
+    notValid = [(1,3),(2,8),(3,1),(5,5),(5,6),(6,1),(6,2),(6,7),(8,0),(8,1),(8,3)]
+    for p in notValid:
+      if p == gridCell:
+        return True
+    return False
+
+def canUseGridCell(gridCell,walk):
+  if isGridCellOnGrid(gridCell):
+    if not isGreyCell(gridCell):
+      if not isGridCellOnWalkAlready(walk,gridCell):
+        return True
+  return False
+
+def gridValue(grid,gridCell):
+  (row,col) = gridCell
+  return grid[row][col]
+
+def checkSnake(grid,walk):
+  return True
 
 def solvePalendromeWalk(grid,walk):
     
@@ -210,23 +246,24 @@ def solvePalendromeWalk(grid,walk):
     #drawGrid(grid,walk) 
     #myPen.getscreen().update()
 
-    # don't allow a walk of more than 30 steps
-    if len(walk) > 60:
-        #print(walk)
-        print("Walk too deep")
-        return False
-    
-    if (walkNorthAndRecurse(grid,walk)):
-        return True
-    
-    if (walkSouthAndRecurse(grid,walk)):
-        return True
-        
-    if (walkEastAndRecurse(grid,walk)):
-        return True
+    # the current end tuple is two values on the grid
+    (snakeA,snakeB) = walk[-1]
 
-    if (walkWestAndRecurse(grid,walk)):
-        return True
+    if (snakeA == snakeB): # The two ends have met
+      return checkSnake(grid,walk)
+
+    # There are 4 positions around snakeA and 4 positions around snakeB
+    for r1 in [-1,0,1]:
+      for c1 in [-1,0,1]:
+        for r2 in [-1,0,1]:
+          for c2 in [-1,0,1]:
+            nextSnakeA = (snakeA[0]+r1,snakeA[1]+c1)
+            nextSnakeB = (snakeB[0]+r2,snakeB[1]+c2)
+            if (canUseGridCell(nextSnakeA,walk) and canUseGridCell(nextSnakeB,walk)):
+              if (gridValue(grid,nextSnakeA) == gridValue(grid,nextSnakeB)):
+                walk.append((nextSnakeA,nextSnakeB))
+                if not solvePalendromeWalk(grid,walk):
+                   walk.pop(-1)
 
     return False
 
@@ -237,24 +274,40 @@ def checkGrid(grid):
         if grid[row][col]==0:
           return False
 
-  # other criteria
-  # print(grid[0][3]==3  )
-  #We have a complete grid!  
-
+  
   # must start and end of the same
   if (grid[4][0] != grid[7][1]):
       return False
 
   print("Suduku solution - looking for snake")
 
+  numbersAroundStart = []
+  numbersAroundEnd = []
+  snakeA = (4,0)
+  snakeB = (7,1)
+  walk = [(snakeA,snakeB)]
+  for r1 in [-1,0,1]:
+      for c1 in [-1,0,1]:
+        for r2 in [-1,0,1]:
+          for c2 in [-1,0,1]:
+            nextSnakeA = (snakeA[0]+r1,snakeA[1]+c1)
+            nextSnakeB = (snakeB[0]+r2,snakeB[1]+c2)
+            if canUseGridCell(nextSnakeA,walk):
+              numbersAroundStart.append(gridValue(grid,nextSnakeA))
+            if canUseGridCell(nextSnakeB,walk):
+              numbersAroundEnd.append(gridValue(grid,nextSnakeB))
+  
+  print(numbersAroundStart.sort())
+  print(numbersAroundEnd.sort())
+
   # Testing walk 
   walk = []
-  myPen.clear()
-  drawGrid(grid,walk) 
-  myPen.getscreen().update()
+  #myPen.clear()
+  #drawGrid(grid,walk) 
+  #myPen.getscreen().update()
 
+  walk.append(((4,0),(7,1)))
 
-  walk.append((4,0)) # walk starts at 4,0
   if (solvePalendromeWalk(grid,walk)):
     myPen.clear()
     drawGrid(grid,walk) 

@@ -73,6 +73,7 @@ def followPathLookingFor(struct,stack):
     if (len(stack) == 0):
         return 0
     
+
     # remove the final thing from stack
     expanding = stack.pop(-1)
     returnCount = 1
