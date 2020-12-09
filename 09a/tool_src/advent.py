@@ -41,18 +41,43 @@ def rangeHasPairTheSumToN(numbers,target):
 def getRange(preampleLength,stopAt):
     return range(preampleLength,stopAt)
 
-def processStruct(struct,preampleLength):
+def processStruct(struct,targetValue):
+
+    
+    # you must find a contiguous set of at least two numbers in your list which sum to the invalid number from step 1.
+    # To find the encryption weakness, add together the smallest and largest number in this contiguous range; in this example, these are 15 and 47, producing 62.
 
     stopAt = len(struct)
 
-    for indexUnderTest in getRange(preampleLength,stopAt) :
-        numbers = getNPreviousNumbers(struct,indexUnderTest,preampleLength)
-        toTest = struct[indexUnderTest]
-        if not rangeHasPairTheSumToN(numbers,toTest):
-            print("%d is not sum of number in previous 25"%(toTest))
-            print(list(numbers))
-            return toTest
+    for startingPos in range(0,stopAt):
+        currentSum = struct[startingPos]
+        assert currentSum < targetValue
+        i = startingPos + 1
+        smallest = currentSum
+        largest = currentSum
+        while currentSum < targetValue:
+            
+            if i > stopAt:
+                break
+            
+            nextNumberToAdd = struct[i]
+            
+            if nextNumberToAdd < smallest:
+                smallest = nextNumberToAdd
 
+            if nextNumberToAdd > largest:
+                largest = nextNumberToAdd
+
+            currentSum = currentSum + nextNumberToAdd
+            i = i + 1
+            
+            if currentSum == targetValue:
+                print("Found target %d with sum of %d"%(targetValue,(smallest + largest)))
+                return smallest + largest
+            
+            if currentSum > targetValue:
+                break
+    
     return -1
 
 def getInputPath():
@@ -62,9 +87,9 @@ def getInputPath():
 def mainTask():
     input_path = getInputPath()
     struct = processInputFile(input_path)
-    preampleLength = 25
-
-    found = processStruct(struct,preampleLength)
+    
+    targetValue = 248131121
+    found = processStruct(struct,targetValue)
 
 if __name__ == "__main__":
 
