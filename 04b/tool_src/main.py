@@ -7,6 +7,7 @@ myPen = turtle.Turtle()
 topLeft_x=-150
 topLeft_y=150
 
+greyCells = [(1,3),(2,8),(3,1),(5,5),(5,6),(6,1),(6,2),(6,7),(8,0),(8,1),(8,3)]
 
 def text(message,x,y,size):
     FONT = ('Arial', size, 'normal')
@@ -39,153 +40,13 @@ def drawGrid(grid,walk):
   for row in range (0,9):
       for col in range (0,9):
         if (walk):
-            if((row,col) in walk):
+            if isGridCellOnWalkAlready(walk,(row,col)):
                 myPen.pencolor("red")
             else :
                 myPen.pencolor("black")
         if grid[row][col]!=0:
           text(grid[row][col],topLeft_x+col*intDim+9,topLeft_y-row*intDim-intDim+8,18)
 
-def getPalendrome(grid,walk):
-    values = []
-    for pos in walk:
-        values.append(grid[pos[0]][pos[1]])
-    return values
-
-def isPalendrome(grid,walk):
-    values = getPalendrome(grid,walk)
-    rlist = values.copy()
-    rlist.reverse()
-    return rlist == values
-
-def checkPalendromeWalk(grid,walk):
-    # the final walk position must be 7,1
-    if (walk[-1] != (7,1)):
-        return False
-
-    #print("Walk of length %d found to reach (7,1)"%(len(walk)))
-    #print(walk)
-
-    # the walk must be a palindrome
-    if (isPalendrome(grid,walk)):
-        return True
-
-    return False
-
-def isValidSnake(walk,step):
-    # not valid if step is already in snake
-    if ( step in walk ):
-        return False # do not re-walk path
-
-    notValid = [(1,3),(2,8),(3,1),(5,5),(5,6),(6,1),(6,2),(6,7),(8,0),(8,1),(8,3)]
-
-    if ( step in notValid ):
-        return False # do not re-walk path
-    # not valid if with 
-
-    # ignoring the last 2 steps, you may not be adjacent to a position.
-    if (len(walk) > 2):
-        shorterWalk = walk[:-2]
-        # generate the 8 postions 1 step away
-        for rd in [-1,0,1]:
-            for cd in [-1,0,1]:
-                t = (step[0]+rd,step[1]+cd)
-                if (t in shorterWalk):
-                    return False
-
-    return True
-
-def walkNorthAndRecurse(grid,walk):
-    # add north to walk if valid
-    lastWalkPosition = walk[-1] #row,column
-    if (lastWalkPosition[0] > 0): # of row is greater than one, we can go north
-        row = lastWalkPosition[0] - 1
-        col = lastWalkPosition[1]
-
-        if (False == isValidSnake(walk,(row,col))):
-            return False # do not re-walk path
-
-        walk.append((row,col))
-        if checkPalendromeWalk(grid,walk) :
-            print("Walk Complete and Checked")
-            return True
-        else:
-            if (False == solvePalendromeWalk(grid,walk)):
-                walk.pop()
-                #back track walk
-    else:
-        return False # invalid step off of grid
-    
-    return False # this was a mistep
-
-def walkSouthAndRecurse(grid,walk):
-    # add south to walk if valid
-    lastWalkPosition = walk[-1] #row,column
-    if (lastWalkPosition[0] < 8):
-        row = lastWalkPosition[0] + 1
-        col = lastWalkPosition[1]
-
-        if (False == isValidSnake(walk,(row,col))):
-            return False # do not re-walk path
-
-        walk.append((row,col))
-        if checkPalendromeWalk(grid,walk) :
-            print("Walk Complete and Checked")
-            return True
-        else:
-            if (False == solvePalendromeWalk(grid,walk)):
-                walk.pop()
-                #back track walk
-    else:
-        return False # invalid step off of grid
-    
-    return False # this was a mistep
-
-def walkEastAndRecurse(grid,walk):
-
-    lastWalkPosition = walk[-1] #row,column
-    if (lastWalkPosition[1] < 8):
-        row = lastWalkPosition[0]
-        col = lastWalkPosition[1] + 1
-        
-        if (False == isValidSnake(walk,(row,col))):
-            return False # do not re-walk path
-
-        walk.append((row,col))
-        if checkPalendromeWalk(grid,walk) :
-            print("Walk Complete and Checked")
-            return True
-        else:
-            if (False == solvePalendromeWalk(grid,walk)):
-                walk.pop()
-                #back track walk
-    else:
-        return False # invalid step off of grid
-    
-    return False # this was a mistep
-
-def walkWestAndRecurse(grid,walk):
-
-    lastWalkPosition = walk[-1] #row,column
-    if (lastWalkPosition[1] > 0):
-        row = lastWalkPosition[0]
-        col = lastWalkPosition[1] - 1
-
-        if (False == isValidSnake(walk,(row,col))):
-            return False # do not re-walk path
-
-        walk.append((row,col))
-        if checkPalendromeWalk(grid,walk) :
-            print("Walk Complete and Checked")
-            return True
-        else:
-            if (False == solvePalendromeWalk(grid,walk)):
-                walk.pop()
-                #back track walk
-    else:
-        return False # invalid step off of grid
-    
-    return False # this was a mistep
 
 def isGridCellOnWalkAlready(walk,gridCell):
     for p in walk:
@@ -204,8 +65,7 @@ def isGridCellOnGrid(gridCell):
   return True
 
 def isGreyCell(gridCell):
-    notValid = [(1,3),(2,8),(3,1),(5,5),(5,6),(6,1),(6,2),(6,7),(8,0),(8,1),(8,3)]
-    for p in notValid:
+    for p in greyCells:
       if p == gridCell:
         return True
     return False
@@ -221,12 +81,65 @@ def gridValue(grid,gridCell):
   (row,col) = gridCell
   return grid[row][col]
 
-def checkSnake(grid,walk):
-  # For a position on walk
-  # only the next position and the previous position may be within 1 square
 
-  # For each grey square, count the number of snake tiles in the surrounding 8 squares
-  # this should equal the value in the grey square
+def countSnakeCellsIn8OfCell(gridCell,walk):
+  (r,c) = gridCell
+  count = 0
+  for r1 in [-1,0,1]:
+    for c1 in [-1,0,1]:
+        absSum = abs(r1) + abs(c1)
+        if (absSum > 0):
+          neighbour = (r+r1,c+c1)
+          if (isGridCellOnWalkAlready(walk,neighbour)):
+            count = count + 1
+  return count
+
+
+def countSnakeCellsNESWOfCell(gridCell,walk):
+  (r,c) = gridCell
+  count = 0
+  for r1 in [-1,0,1]:
+    for c1 in [-1,0,1]:
+      # don't allow the diagonals or middle
+      absSum = abs(r1) + abs(c1)
+      if (absSum < 2 and absSum > 0):
+        neighbour = (r+r1,c+c1)
+        if (isGridCellOnWalkAlready(walk,neighbour)):
+          count = count + 1
+  return count
+
+def printSnake(grid,walk):
+  for r in range(0,9):
+    row = []
+    for c in range(0,9):
+      if isGridCellOnWalkAlready(walk,(r,c)):
+        row.append(str(grid[r][c]))
+      else:
+        row.append("_")
+    print(list(row))
+  print("")
+
+def checkSnakeCountAroundGreyCell(grid,walk,greyCellRC):
+  neededCount = grid[greyCellRC[0]][greyCellRC[1]]
+  snakeCount = countSnakeCellsIn8OfCell(greyCellRC,walk)
+  return neededCount == snakeCount
+
+def checkSnake(grid,walk):
+  # Each snake cell can neighbour at most 2 other snake cells
+  
+  #printSnake(grid,walk)
+  #print(walk)
+  for p in walk:
+      if countSnakeCellsNESWOfCell(p[0],walk) > 2 :
+        return False
+      if countSnakeCellsNESWOfCell(p[1],walk) > 2 :
+        return False
+
+  #Around a grey cell, there can only be n snake cells
+  for greyCellRC in greyCells :
+    if not checkSnakeCountAroundGreyCell(grid,walk,greyCellRC):
+      return False
+
   return True
 
 def solvePalendromeWalk(grid,walk):
@@ -237,6 +150,9 @@ def solvePalendromeWalk(grid,walk):
 
     # the current end tuple is two values on the grid
     (snakeA,snakeB) = walk[-1]
+
+    if (walk == [((4, 0), (7, 1)), ((4, 1), (7, 2)), ((5, 1), (7, 3)), ((5, 2), (7, 4)), ((5, 3), (8, 4)), ((5, 4), (8, 5)), ((4, 4), (8, 6)), ((3, 4), (7, 6)), ((3, 3), (7, 7)), ((2, 3), (7, 8)), ((2, 2), (6, 8)), ((1, 2), (5, 8)), ((0, 2), (4, 8)), ((0, 3), (4, 7)), ((0, 4), (3, 7)), ((0, 5), (3, 6)), ((1, 5), (2, 6)), ((1, 6), (1, 6))]):
+      print("This should be the solution")
 
     if (snakeA == snakeB): # The two ends have met
       return checkSnake(grid,walk)
@@ -259,6 +175,8 @@ def solvePalendromeWalk(grid,walk):
                     walk.append((nextSnakeA,nextSnakeB))
                     if not solvePalendromeWalk(grid,walk):
                       walk.pop(-1)
+                    else:
+                      return True #solved!
 
     return False
 
@@ -269,30 +187,33 @@ def checkGrid(grid):
         if grid[row][col]==0:
           return False
 
-  
-  # must start and end of the same
-  if (grid[4][0] != grid[7][1]):
-      return False
 
-  print("Suduku solution - looking for snake")
+  if (True):
+    # must start and end of the same
+    if (grid[4][0] != grid[7][1]):
+        return False
 
-  # Testing walk 
-  walk = []
-  #myPen.clear()
-  #drawGrid(grid,walk) 
-  #myPen.getscreen().update()
+    print("Suduku solution - looking for snake")
 
-  walk.append(((4,0),(7,1)))
+    # Testing walk 
+    
+    
+    #myPen.clear()
+    #drawGrid(grid,walk) 
+    #myPen.getscreen().update()
+    
+    walk = []
+    walk.append(((4,0),(7,1)))
 
-  if (solvePalendromeWalk(grid,walk)):
-    myPen.clear()
-    drawGrid(grid,walk) 
-    myPen.getscreen().update()
-    return True
+    if (solvePalendromeWalk(grid,walk)):
+      myPen.clear()
+      drawGrid(grid,walk) 
+      myPen.getscreen().update()
+      return True
 
-  return False
+    return False
 
-  #return True 
+  return True 
 
 
 
@@ -363,6 +284,8 @@ def mainTask():
   grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
   grid.append([0, 0, 0, 0, 0, 3, 0, 0, 9])
 
+  # pre-solve sudoku to test snake
+  
   turtle.tracer(0)
   #myPen.tracer(0)
   myPen.speed(0)
@@ -377,9 +300,9 @@ def mainTask():
   if solved:
     print("Sudoku Grid Solved")
     text("Sudoku Grid Solved",-110,-190,20)
-    myPen.clear()
-    drawGrid(grid,[]) 
-    myPen.getscreen().update()           
+    #myPen.clear()
+    #drawGrid(grid,[]) 
+    #myPen.getscreen().update()           
     #sleep(50000)
     
   else:  
@@ -387,7 +310,8 @@ def mainTask():
     text("Cannot Solve Sudoku Grid",-130,-190,20)
 
   myPen.getscreen().update()
-
+  input("Press Enter to continue...")
+    
 if __name__ == "__main__":
 
-    mainTask()
+    mainTask()    
