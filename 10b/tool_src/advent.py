@@ -71,7 +71,7 @@ def mainTask():
     struct = processInputFile(input_path)
     #print(struct)
     print( processStruct(struct) )
-
+    # 5289227976704
 if __name__ == "__main__":
 
     mainTask()

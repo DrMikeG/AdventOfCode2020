@@ -46,7 +46,7 @@ def drawGrid(grid,walk):
                 myPen.pencolor("black")
         if grid[row][col]!=0:
           text(grid[row][col],topLeft_x+col*intDim+9,topLeft_y-row*intDim-intDim+8,18)
-
+  sleep(1)
 
 def isGridCellOnWalkAlready(walk,gridCell):
     for p in walk:
@@ -144,15 +144,12 @@ def checkSnake(grid,walk):
 
 def solvePalendromeWalk(grid,walk):
     
-    #myPen.clear()
-    #drawGrid(grid,walk) 
-    #myPen.getscreen().update()
+    myPen.clear()
+    drawGrid(grid,walk) 
+    myPen.getscreen().update()
 
     # the current end tuple is two values on the grid
     (snakeA,snakeB) = walk[-1]
-
-    if (walk == [((4, 0), (7, 1)), ((4, 1), (7, 2)), ((5, 1), (7, 3)), ((5, 2), (7, 4)), ((5, 3), (8, 4)), ((5, 4), (8, 5)), ((4, 4), (8, 6)), ((3, 4), (7, 6)), ((3, 3), (7, 7)), ((2, 3), (7, 8)), ((2, 2), (6, 8)), ((1, 2), (5, 8)), ((0, 2), (4, 8)), ((0, 3), (4, 7)), ((0, 4), (3, 7)), ((0, 5), (3, 6)), ((1, 5), (2, 6)), ((1, 6), (1, 6))]):
-      print("This should be the solution")
 
     if (snakeA == snakeB): # The two ends have met
       return checkSnake(grid,walk)
@@ -198,9 +195,9 @@ def checkGrid(grid):
     # Testing walk 
     
     
-    #myPen.clear()
-    #drawGrid(grid,walk) 
-    #myPen.getscreen().update()
+    myPen.clear()
+    drawGrid(grid,[]) 
+    myPen.getscreen().update()
     
     walk = []
     walk.append(((4,0),(7,1)))
@@ -256,9 +253,9 @@ def solveGrid(grid):
             #Check that this value has not already be used on this 3x3 square
             if not value in (square[0] + square[1] + square[2]):
               grid[row][col]=value
-              #myPen.clear()
-              #drawGrid(grid) 
-              #myPen.getscreen().update()            
+              myPen.clear()
+              drawGrid(grid,[]) 
+              myPen.getscreen().update()            
               if checkGrid(grid):
                 print("Grid Complete and Checked")
                 return True
@@ -274,15 +271,15 @@ def solveGrid(grid):
 def mainTask():
   #initialise empty 9 by 9 grid
   grid = []
-  grid.append([5, 0, 0, 3, 0, 0, 0, 0, 0])
-  grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-  grid.append([7, 0, 0, 0, 0, 0, 0, 0, 0])
-  grid.append([0, 0, 0, 0, 0, 8, 0, 0, 0])
-  grid.append([0, 0, 1, 0, 0, 0, 2, 0, 0])
-  grid.append([0, 0, 0, 5, 0, 0, 0, 0, 0])
-  grid.append([0, 0, 0, 0, 0, 0, 0, 0, 3])
-  grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-  grid.append([0, 0, 0, 0, 0, 3, 0, 0, 9])
+  grid.append([5, 1, 4, 3, 7, 9, 0, 0, 0])
+  grid.append([2, 9, 8, 6, 1, 0, 3, 0, 0])
+  grid.append([7, 6, 3, 2, 8, 0, 0, 0, 1])
+  grid.append([6, 3, 2, 1, 4, 8, 9, 7, 5])
+  grid.append([8, 5, 1, 9, 6, 7, 2, 3, 4])
+  grid.append([4, 7, 9, 5, 3, 2, 1, 6, 8])
+  grid.append([9, 4, 6, 8, 2, 1, 7, 5, 3])
+  grid.append([3, 8, 5, 7, 9, 6, 4, 1, 2])
+  grid.append([1, 2, 7, 4, 5, 3, 6, 8, 9])
 
   # pre-solve sudoku to test snake
   
