@@ -129,6 +129,7 @@ def distToWayPoint(wayPointPos,shipPos):
 
 def followCourse(course):
 
+    print("New course...")
     # waypoint in absolute position, not relative to ship
 
     #waypoint starts 10 units east and 1 unit north
@@ -188,6 +189,7 @@ def followCourse(course):
 
         print("Waypoint position (%d,%d)"%(wayPoint_xPos-ship_xPos,wayPoint_yPos-ship_yPos))
 
+    return (abs(ship_xPos) + abs(ship_yPos))
 
 def getInputPath():
     return os.path.join(os.path.dirname(__file__),"input.txt")
@@ -196,7 +198,7 @@ def getInputPath():
 def mainTask():
     input_path = getInputPath()
     course = processInputFile(input_path)
-    followCourse(course)
+    print(followCourse(course))
 
 if __name__ == "__main__":
 

@@ -46,5 +46,25 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual( rotateM180(-2,-5),(2,5))
         self.assertEqual( rotateM270(-5,+2),(2,5))
 
+    def test_defaultWayPoint1Step(self):
+        struct = processInputFile(os.path.join(os.path.dirname(__file__),"test_input_2.txt"))
+        self.assertEqual(11,followCourse(struct))
+    
+    def test_resetWayPointThen10Steps(self):
+        struct = processInputFile(os.path.join(os.path.dirname(__file__),"test_input_3.txt"))
+        self.assertEqual(0,followCourse(struct))
+
+    def test_resetWayPointThenTriagle4(self):
+        struct = processInputFile(os.path.join(os.path.dirname(__file__),"test_input_4.txt"))
+        self.assertEqual(0,followCourse(struct))
+
+    def test_resetWayPointThenTriagle5(self):
+        struct = processInputFile(os.path.join(os.path.dirname(__file__),"test_input_5.txt"))
+        self.assertEqual(0,followCourse(struct))
+
+    def test_resetWayPointThenTriagle6(self):
+        struct = processInputFile(os.path.join(os.path.dirname(__file__),"test_input_6.txt"))
+        self.assertEqual(0,followCourse(struct))
+
 if __name__ == '__main__':
     unittest.main()
