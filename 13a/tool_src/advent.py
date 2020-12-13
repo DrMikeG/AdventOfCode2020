@@ -2,17 +2,12 @@ import os
 import re
 import copy
 import math
-import itertools
 
-
-def processLineOfInputIntoStruct(line):
-    # This very efficiently makes my pairs (0, 29), (19, 41), (29, 521), (37, 23), (42, 13), (46, 17), (60, 601), (66, 37), (79, 19)]
-    raw = line.strip().split(',')
-    buses = []
-    for i, v in enumerate(raw):
-        if v != 'x':
-            buses.append((i, int(v)))
-    return buses
+def processLineOfInputIntoStruct(line,struct):
+    intstrs = line.split(",")
+    for x in intstrs:
+        if (x.strip() != "x"):
+            struct.append(int(x.strip()))
 
 
 def processInputFile(filePath):
@@ -21,38 +16,40 @@ def processInputFile(filePath):
     if os.path.exists(filePath):
         f = open(filePath, "r")
         for x in f:
-            course = processLineOfInputIntoStruct(x)
+            processLineOfInputIntoStruct(x,course)
         f.close()
     else :
         print("%s does not exist"%(filePath))
 
     return course
 
-def lcm(a, b):
-    # The least common multiple (L.C.M.) of two numbers is the smallest positive integer
-    # that is perfectly divisible by the two given numbers.
-    # For example, the L.C.M. of 12 and 14 is 84.
+def nextBusLeavesIn(targetTime,base):
+    fac = math.floor(targetTime / base)
 
-    # // operator to do integer division 
-    return a * b // math.gcd(a, b)
+    multA = fac * base
+    if (multA < targetTime):
+        multA = (fac+1) * base
+        assert multA >= targetTime
 
-def processStruct(buses):
+    timeD =multA - targetTime 
+    print("Bus ID %d leaves at %d - %d minutes after %d"%(base,multA,timeD,targetTime))
+    return timeD
 
-    (time, step) = buses[0]
+def processStruct(struct):
 
-    for (delta, period) in buses[1:] :
-            # itertools.count(start, [step])
-            # start, start+step, start+2*step
-        for time in itertools.count(time, step): # is multiple N of time also divisible by next number?
-            if (time + delta) % period == 0:
-                break
-        
+    target = struct[0]
+    best = target
+    bestID = -1
+    for busId in struct[1:]:
+        diff = nextBusLeavesIn(target,busId)
+        assert diff != best
+        if diff < best :
+            bestID = busId
+            best = diff
 
-        step = lcm(step, period)
-
-    print(time)
-
-    return time
+    # What is the ID of the earliest bus you can take to the airport multiplied by the number of minutes you'll need to wait for that bus?
+    print("Best bus is %d with %d min wait"%(bestID,best))
+    return bestID * best
 
 def getInputPath():
     return os.path.join(os.path.dirname(__file__),"input.txt")
