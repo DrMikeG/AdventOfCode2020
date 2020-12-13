@@ -2,16 +2,17 @@ import os
 import re
 import copy
 import math
+import itertools
 
-def processLineOfInputIntoStruct(line,struct):
-    intstrs = line.split(",")
-    xCount = 0
-    for x in intstrs:
-        if (x.strip() != "x"):
-            struct.append((xCount,int(x.strip())))
-            xCount = 0
-        else:
-            xCount = xCount+1
+
+def processLineOfInputIntoStruct(line):
+    # This very efficiently makes my pairs (0, 29), (19, 41), (29, 521), (37, 23), (42, 13), (46, 17), (60, 601), (66, 37), (79, 19)]
+    raw = line.strip().split(',')
+    buses = []
+    for i, v in enumerate(raw):
+        if v != 'x':
+            buses.append((i, int(v)))
+    return buses
 
 
 def processInputFile(filePath):
@@ -20,60 +21,38 @@ def processInputFile(filePath):
     if os.path.exists(filePath):
         f = open(filePath, "r")
         for x in f:
-            processLineOfInputIntoStruct(x,course)
+            course = processLineOfInputIntoStruct(x)
         f.close()
     else :
         print("%s does not exist"%(filePath))
 
     return course
 
+def lcm(a, b):
+    # The least common multiple (L.C.M.) of two numbers is the smallest positive integer
+    # that is perfectly divisible by the two given numbers.
+    # For example, the L.C.M. of 12 and 14 is 84.
 
-def isBusTime(targetTime,base):
-    div = targetTime / base
-    return (div == math.floor(div))
+    # // operator to do integer division 
+    return a * b // math.gcd(a, b)
 
-def processStruct(startFrom,struct):
+def processStruct(buses):
 
-    # each entry is offset,value
-    
-    listMin = struct[0][1]
-    
-    startAt = listMin * math.floor(startFrom / listMin)
+    (time, step) = buses[0]
 
-    while True:
-        timeWorksForAllBusses = True
-
-        
-        
-        nextBusArrivesAt = startAt
-        #print("Base time %d"%(nextBusArrivesAt))
-        for offsetBusIDPair in struct:
-            busId = offsetBusIDPair[1]
-
-            if (offsetBusIDPair[0] > 0):
-                nextBusArrivesAt = nextBusArrivesAt + offsetBusIDPair[0]
-
-            if not isBusTime(nextBusArrivesAt,busId):
-                #print("Time %d Bus %d is not valid"%(nextBusArrivesAt,busId))
-                timeWorksForAllBusses = False
+    for (delta, period) in buses[1:] :
+            # itertools.count(start, [step])
+            # start, start+step, start+2*step
+        for time in itertools.count(time, step): # is multiple N of time also divisible by next number?
+            if (time + delta) % period == 0:
                 break
-            #else:
-                #print("Time %d Bus %d is valid"%(nextBusArrivesAt,busId))
-
-            #if (offsetBusIDPair[0] == 0):
-            nextBusArrivesAt = nextBusArrivesAt + 1
-
-
         
-        if (timeWorksForAllBusses):
-            print("Answer timestamp is %d"%(startAt))
-            break
 
-        startAt = startAt + listMin
+        step = lcm(step, period)
 
-        if (startAt % 100000000000 == 0):
-            print(startAt)
-    return startAt
+    print(time)
+
+    return time
 
 def getInputPath():
     return os.path.join(os.path.dirname(__file__),"input.txt")
@@ -82,7 +61,7 @@ def getInputPath():
 def mainTask():
     input_path = getInputPath()
     struct = processInputFile(input_path)
-    print("answer %d"%(processStruct(100000000000000,struct)))
+    print("answer %d"%(processStruct(struct)))
     
 
 if __name__ == "__main__":
