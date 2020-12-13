@@ -27,36 +27,47 @@ def processInputFile(filePath):
 
     return course
 
-def gcd(a,b):
-    if b == 0:
-        return a
-    else:
-        return gcd(b, (a % b))
-
 
 def isBusTime(targetTime,base):
     div = targetTime / base
     return (div == math.floor(div))
 
-def processStruct(struct):
+def processStruct(startFrom,struct):
 
     # each entry is offset,value
     
     listMin = struct[0][1]
     
-    startAt = listMin * math.floor(100000090057500 / listMin)
+    startAt = listMin * math.floor(startFrom / listMin)
+
     while True:
         timeWorksForAllBusses = True
 
+        
+        
+        nextBusArrivesAt = startAt
+        #print("Base time %d"%(nextBusArrivesAt))
         for offsetBusIDPair in struct:
             busId = offsetBusIDPair[1]
-            time = startAt + offsetBusIDPair[0]
-            if not isBusTime(time,busId):
+
+            if (offsetBusIDPair[0] > 0):
+                nextBusArrivesAt = nextBusArrivesAt + offsetBusIDPair[0]
+
+            if not isBusTime(nextBusArrivesAt,busId):
+                #print("Time %d Bus %d is not valid"%(nextBusArrivesAt,busId))
                 timeWorksForAllBusses = False
                 break
+            #else:
+                #print("Time %d Bus %d is valid"%(nextBusArrivesAt,busId))
+
+            #if (offsetBusIDPair[0] == 0):
+            nextBusArrivesAt = nextBusArrivesAt + 1
+
+
         
         if (timeWorksForAllBusses):
             print("Answer timestamp is %d"%(startAt))
+            break
 
         startAt = startAt + listMin
 
@@ -71,7 +82,7 @@ def getInputPath():
 def mainTask():
     input_path = getInputPath()
     struct = processInputFile(input_path)
-    print("answer %d"%(processStruct(struct)))
+    print("answer %d"%(processStruct(100000000000000,struct)))
     
 
 if __name__ == "__main__":
