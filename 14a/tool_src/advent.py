@@ -11,13 +11,19 @@ def applyMaskBinary(maskBits,value):
     maskLen = len(maskBits)
     assert maskLen == 36
     valueBits = toBinary(value)
+    valueBitsLen = len(valueBits)
+    assert valueBitsLen == 36
+
     outputValue = 0
     for i in range(36)[::-1]:
+        # Work from right to left
+        # bit position i is equal to 2^(35-i)
+        bitValue = 2 ** (35-i)
         if maskBits[i] == 'X':
             if valueBits[i] == '1':
-                outputValue = outputValue = 2^i
+                outputValue = outputValue + bitValue
         elif maskBits[i] == '1':
-            outputValue = outputValue = 2^i
+            outputValue = outputValue + bitValue
         else:
             assert maskBits[i] == '0'
     return outputValue
