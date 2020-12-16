@@ -12,8 +12,8 @@ def age(n,turn,lastspoken):
     return lastspoken[n][-1] -lastspoken[n][-2]
 
 def numberIsSpoken(n,turn,lastspoken):
-    if (turn % 100) == 0:
-        print("Turn %d number %d"%(turn,n))
+    #if (turn % 100) == 0:
+        #print("Turn %d number %d"%(turn,n))
     if n not in lastspoken:
         lastspoken[n] = [turn]
     else:

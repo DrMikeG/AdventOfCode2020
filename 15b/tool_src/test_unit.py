@@ -1,6 +1,7 @@
 import unittest
 import os
 
+from time import perf_counter
 from advent import beginGame
 
 class TestStringMethods(unittest.TestCase):
@@ -14,8 +15,12 @@ class TestStringMethods(unittest.TestCase):
     #def test_games4(self):        
     #    self.assertEqual(261214,beginGame([1,2,3],30000000))
 
-    def test_gamesPuzzle(self):        
-        self.assertEqual(492,beginGame([1,20,8,12,0,14],30000000))
+    def test_gamesPuzzle(self):
+        t1_start = perf_counter()  
+        self.assertEqual(63644,beginGame([1,20,8,12,0,14],30000000))
+        t1_stop = perf_counter() 
+        print("Elapsed time:", t1_stop, t1_start)  
+        print("Elapsed time during the whole program in seconds:",t1_stop-t1_start) 
 
 if __name__ == '__main__':
     unittest.main()
