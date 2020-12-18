@@ -51,7 +51,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(23340,reduceStringToSingleValue(insertBracketsForAllAdditions("((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2")))
 
     def test_Preprocess8(self):
-        self.assertEqual(" ( ( ( ( (8 + (8 * 4 )) + (7 + 3 * 5) ) + 4 ) + 4 ) + 7 )",insertBracketsForAllAdditions("(8 + (8 * 4)) + (7 + 3 * 5) + 4 + 4 + 7"))
+        self.assertEqual(" ( ( ( ( ( (8 + (8 * 4 ) )) + ( (7 + 3 ) * 5 ) ) + 4 ) + 4 ) + 7 ) ",insertBracketsForAllAdditions("(8 + (8 * 4)) + (7 + 3 * 5) + 4 + 4 + 7"))
 
 
 
