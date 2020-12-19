@@ -20,12 +20,27 @@ def mostLikely2SplitsFirst(remainingString):
 
 
 def testAllPossible2Splits(remainingString,ruleLeft,ruleRight,recursionControl,ruleStuct):
-    foundMatch = False
-
+    
+    ## if ruleLeft or ruleRight == 12 then only split left or right by 1
+    ##  if ruleLeft or ruleRight == 106 then only split left or right by 1
+    
     if len(remainingString) < 2: 
         return False
 
-    rangeA = mostLikely2SplitsFirst(remainingString)
+    foundMatch = False
+
+    rangeA = []
+
+    if ruleLeft == 12:
+        rangeA = [1]
+    elif ruleRight == 12:
+        rangeA = [len(remainingString)-1]
+    elif ruleLeft == 106:
+        rangeA = [1]
+    elif ruleRight == 106:
+        rangeA = [len(remainingString)-1]
+    else:
+        rangeA = mostLikely2SplitsFirst(remainingString)
 
     for splitPosition in rangeA:#range(1,len(remainingString)):
         leftStr = remainingString[0:splitPosition]

@@ -35,7 +35,7 @@ class TestStringMethods(unittest.TestCase):
     def test_loadRealFile(self):
         ruleStruct, messages = processInputFile( getInputPath()  )
         self.assertEqual(130,len(ruleStruct))
-        self.assertEqual(459,len(messages))
+        self.assertEqual(259,len(messages))
         self.assertEqual(True, canIMatchThisStringForThisRule("b",12,{},ruleStruct))
         self.assertEqual(True, canIMatchThisStringForThisRule("a",106,{},ruleStruct))
         self.assertEqual(True, canIMatchThisStringForThisRule("ababbbababaaaaabbbabaaaa",0,{},ruleStruct))
