@@ -69,6 +69,8 @@ def testAllMessagesAndCountValid(ruleStruct,messages):
     for message in messages:
         if message in allValidMessages:
             validMessageCount = validMessageCount + 1
+        else:
+            print(message)
     return validMessageCount
 
 def processLineOfInputIntoMessageStruct(line,messages):

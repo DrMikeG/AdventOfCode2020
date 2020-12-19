@@ -3,108 +3,130 @@ import re
 import copy
 import math
 
-def everyAWithEveryB(aS,bS):
-    ret = []
-    for a in aS:
-        for b in bS:
-            ret.append(a+b)
-    return ret
 
-def followAndCombinePartsAndB(ruleStuct,ruleA,ruleB,cutOff):
-    aS = followEveryPath(ruleStuct,ruleA,cutOff) # array of possible values for ruleA
-    bS = followEveryPath(ruleStuct,ruleB,cutOff) # array of possible values for ruleB
-    return everyAWithEveryB(aS,bS) # all possible combinations of AB
+def mostLikely2SplitsFirst(remainingString):
 
-def followAndCombinePartsAndBAndC(ruleStuct,ruleA,ruleB,ruleC,cutOff):
-    aS = followEveryPath(ruleStuct,ruleA,cutOff) # array of possible values for ruleA
-    bS = followEveryPath(ruleStuct,ruleB,cutOff) # array of possible values for ruleB
-    cS = followEveryPath(ruleStuct,ruleC,cutOff) # array of possible values for rulec
-    t = everyAWithEveryB(aS,bS)
-    return everyAWithEveryB(t,cS) # all possible combinations of ABC
+    ps = range(1,len(remainingString))
+    average = sum(ps) / len(ps)
+    pairs = []
+    for p in ps:
+        pairs.append((p,abs(average-p)))
+
+    pairs.sort(key=lambda x: x[1])
+    sortedValues = []
+    for p in pairs:
+        sortedValues.append(p[0])
+    return sortedValues
 
 
+def testAllPossible2Splits(remainingString,ruleLeft,ruleRight,recursionControl,ruleStuct):
+    foundMatch = False
 
-def followEveryPath(ruleStuct,rule,cutOff):
+    if len(remainingString) < 2: 
+        return False
 
-  
+    rangeA = mostLikely2SplitsFirst(remainingString)
 
-    assert rule in ruleStuct
-    choices = ruleStuct[rule]
+    for splitPosition in rangeA:#range(1,len(remainingString)):
+        leftStr = remainingString[0:splitPosition]
+        assert len(leftStr) > 0
+        rightStr = remainingString[splitPosition:len(remainingString)]
+        assert len(rightStr) > 0
+        remade = leftStr+rightStr
+        assert remade == remainingString
+        canMatchLeft = canIMatchThisStringForThisRule(leftStr,ruleLeft,recursionControl,ruleStuct)
+        if canMatchLeft:
+            canMatchRight = canIMatchThisStringForThisRule(rightStr,ruleRight,recursionControl,ruleStuct)
+            if (canMatchRight):
+                return True
+    return foundMatch
+
+def testAllPossible3Splits(remainingString,ruleA,ruleB,ruleC,recursionControl,ruleStuct):
+    foundMatch = False
     
-    # If rule has one option
+    if len(remainingString) < 3: 
+        return False
+
+    for splitPositionA in range(1,len(remainingString)-2):
+        aStr = remainingString[0:splitPositionA]
+        for splitPositionB in range(splitPositionA+1,len(remainingString)):
+            bStr = remainingString[splitPositionA:splitPositionB]
+            cStr = remainingString[splitPositionB:len(remainingString)]
+            assert len(aStr) > 0
+            assert len(bStr) > 0
+            assert len(cStr) > 0
+            assert aStr+bStr+cStr == remainingString
+
+            canMatchA = canIMatchThisStringForThisRule(aStr,ruleA,recursionControl,ruleStuct)
+            if canMatchA:
+                canMatchB = canIMatchThisStringForThisRule(bStr,ruleB,recursionControl,ruleStuct)
+                if (canMatchB):
+                    canMatchC = canIMatchThisStringForThisRule(cStr,ruleC,recursionControl,ruleStuct)
+                    if (canMatchC):
+                        return True
+    return foundMatch
+
+
+
+def canIMatchThisStringForThisRule(remainingString,ruleN,recursionControl,ruleStuct):
+    assert ruleN in ruleStuct
+    choices = ruleStuct[ruleN]
+    # No rules match to empty
+    
+    foundMatch = False
+
+     # If rule has one option
     if len(choices) == 1:
         parts = choices[0]
         # if option has one part
         if len(parts) == 1:
             # if part it terminal, return character
             if parts[0] == -1:
-                return ["a"]
+                foundMatch = "a" == remainingString
+                #print("Match %s to rule %d is %s"%(remainingString,ruleN,foundMatch))
+                return foundMatch
             elif parts[0] == -2:
-                return ["b"]
-
-    # Options from this point one are:
-    # A or B
-    possibilities = []
-
-
-    # 8: 42 | 42 8
-    # If we reach rule 8,
-    # if rule == 8 and cutOff > 3, do not expand second choice of rule 8 (only first)
-    # if rule == 8 and cutOff < 3, cutOff = cutOff+1
-
-    # 11: 42 31 | 42 11 31
-    # If we reach rule 10,
-    # if rule == 11 and cutOff > 3, do not expand second choice of rule 11 (only first)
-    # if rule == 11 and cutOff < 3, cutOff = cutOff+1
+                foundMatch = "b" == remainingString
+                #print("Match %s to rule %d is %s"%(remainingString,ruleN,foundMatch))
+                return foundMatch
     
-    if rule == 8:
-        if cutOff > 1:
-            t = followEveryPath(ruleStuct,42,cutOff+1)
-            possibilities.extend(t)
-            return possibilities
-        else:
-            t = followAndCombinePartsAndB(ruleStuct,42,8,cutOff+1)
-            possibilities.extend(t)
-            return possibilities
-    
-    if rule == 11:
-        if cutOff > 1:
-            t = followAndCombinePartsAndB(ruleStuct,42,31,cutOff+1)
-            possibilities.extend(t)
-            return possibilities
-        else :
-            t = followAndCombinePartsAndBAndC(ruleStuct,42,11,31,cutOff+1)
-            possibilities.extend(t)
-            return possibilities
 
     for choice in choices:
-
-        #for choice in choices:
-        # only consider choice 0
         parts = choice
         nParts = len(parts)
         assert nParts < 4
         assert nParts > 0
-        #We need to expand and concaternate all the parts
+        # There is 1,2 or 3 parts to this choice
         if nParts == 1:
-            t = followEveryPath(ruleStuct,parts[0],cutOff) # []
-            possibilities.extend(t)
+            if canIMatchThisStringForThisRule(remainingString,parts[0],recursionControl,ruleStuct):
+                foundMatch = True
+                break
         elif nParts == 2:
-            t = followAndCombinePartsAndB(ruleStuct,parts[0],parts[1],cutOff)
-            possibilities.extend(t)
+            if testAllPossible2Splits(remainingString,parts[0],parts[1],recursionControl,ruleStuct):
+                foundMatch = True
+                break
         elif nParts == 3:
-            t = followAndCombinePartsAndBAndC(ruleStuct,parts[0],parts[1],parts[2],cutOff)
-            possibilities.extend(t)
+            if testAllPossible3Splits(remainingString,parts[0],parts[1],parts[2],recursionControl,ruleStuct):
+                foundMatch = True
+                break
 
-    return possibilities
+    #print("Match %s to rule %d is %s"%(remainingString,ruleN,foundMatch))
+
+    return foundMatch
+
+
+
+def testIsMessagesValid(ruleStruct,message):
+    recursionControl = {}
+    return canIMatchThisStringForThisRule(message,0,recursionControl,ruleStruct)
 
 def testAllMessagesAndCountValid(ruleStruct,messages):
     validMessageCount = 0
-    print("Calculating valid message strings....")
-    allValidMessages = followEveryPath(ruleStruct,0,0)
-    print("Testing valid messages from intput....")
+    msgChecked = 0
     for message in messages:
-        if message in allValidMessages:
+        print("Checking message %d"%(msgChecked))
+        msgChecked = msgChecked + 1
+        if testIsMessagesValid(ruleStruct,message):
             validMessageCount = validMessageCount + 1
     return validMessageCount
 
