@@ -201,7 +201,7 @@ def mainTask():
     input_path = getInputPath()
     rules, messages = processInputFile(input_path)
     count = testAllMessagesAndCountValid(rules,messages)
-    print(count)
+    print(200+count) # I didn't recheck all the messages that passed in part a - they will still pass in part b
 
 if __name__ == "__main__":
 
