@@ -66,6 +66,7 @@ def followEveryPath(ruleStuct,rule):
 def testAllMessagesAndCountValid(ruleStruct,messages):
     validMessageCount = 0
     allValidMessages = followEveryPath(ruleStruct,0)
+    print(len(allValidMessages))
     for message in messages:
         if message in allValidMessages:
             validMessageCount = validMessageCount + 1
@@ -127,7 +128,7 @@ def getInputPath():
 
 def mainTask():
     input_path = getInputPath()
-    rules, messages = processInputFile(input_path)
+    rules, messages = processInputFile(input_path)        
     count = testAllMessagesAndCountValid(rules,messages)
     print(count)
 
