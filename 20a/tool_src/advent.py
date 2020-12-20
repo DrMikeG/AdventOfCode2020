@@ -208,20 +208,8 @@ def checkAllPossibleArrangementsOf(tiles):
     bottomLeftID = 0
     bottomRightID = 0
 
-    forcedOrder = []
-    forcedOrder.append(findTileWithID(tiles,1951))
-    forcedOrder.append(findTileWithID(tiles,2311))
-    forcedOrder.append(findTileWithID(tiles,3079))
     
-    forcedOrder.append(findTileWithID(tiles,2729))
-    forcedOrder.append(findTileWithID(tiles,1427))
-    forcedOrder.append(findTileWithID(tiles,2473))
-    
-    forcedOrder.append(findTileWithID(tiles,2971))
-    forcedOrder.append(findTileWithID(tiles,1489))
-    forcedOrder.append(findTileWithID(tiles,1171))
-
-    for uniqueOrder in [forcedOrder]:#permutations(tiles,len(tiles)):
+    for uniqueOrder in permutations(tiles,len(tiles)):
 
         # The corner IDs are not dependent on rotation:
         if (gridN == 3):
@@ -238,14 +226,14 @@ def checkAllPossibleArrangementsOf(tiles):
         chosenRotations = {}
         #piece 1 has 8 starting positions
         for rotation in range(8):
-            print("Trying rotation %d of piece %d as piece 1"%(rotation,uniqueOrder[0].getID()))
+            #print("Trying rotation %d of piece %d as piece 1"%(rotation,uniqueOrder[0].getID()))
             chosenRotations.clear()
             chosenRotations[0] = rotation
 
-            print("North == %d"%(uniqueOrder[0].getBorderTop(rotation)))
-            print("East == %d"%(uniqueOrder[0].getBorderRight(rotation)))
-            print("South == %d"%(uniqueOrder[0].getBorderBottom(rotation)))
-            print("West == %d"%(uniqueOrder[0].getBorderLeft(rotation)))
+            #print("North == %d"%(uniqueOrder[0].getBorderTop(rotation)))
+            #print("East == %d"%(uniqueOrder[0].getBorderRight(rotation)))
+            #print("South == %d"%(uniqueOrder[0].getBorderBottom(rotation)))
+            #print("West == %d"%(uniqueOrder[0].getBorderLeft(rotation)))
 
             # Try to fit every other tile for each of it's orientation
             # Is there ever more than one matching edge?
@@ -301,7 +289,7 @@ def checkAllPossibleArrangementsOf(tiles):
                     if fittedLeft and fittedTop:
                         fittedPiece = True
                         fittedOrientation = tryFittingRotation
-                        print("Can place piece %d orientation %d"%(tileN,fittedOrientation))
+                        #print("Can place piece %d orientation %d"%(tileN,fittedOrientation))
                         break
                 
                 if (fittedPiece):
@@ -319,7 +307,8 @@ def checkAllPossibleArrangementsOf(tiles):
                     ids.append(t.getID())
                 print(ids)
                 print(chosenRotations)
-                break
+                print (topLeftID * topRightID * bottomLeftID * bottomRightID)
+                return
 
         nOrdersTried = nOrdersTried + 1
         print("number of orders tried = %s"%(nOrdersTried))
