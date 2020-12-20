@@ -49,15 +49,26 @@ class Tile:
             id2Str = id2Str + lines[10][r]
         for r in range(1,11):
             id3Str = id3Str + lines[r][0]
-        
-        self.default_edges.append(id0Str)
-        self.default_edges.append(id1Str)
-        self.default_edges.append(id2Str)
-        self.default_edges.append(id3Str)
+
+        assert len(id0Str) == 10
+        assert len(id1Str) == 10
+        assert len(id2Str) == 10
+        assert len(id3Str) == 10
+
+
+        self.default_edges.append(id0Str) #N
+        self.default_edges.append(id1Str) #E
+        self.default_edges.append(id2Str) #S
+        self.default_edges.append(id3Str) #W
 
     def getCharsArrays(self):
         assert len(self.default_edges) == 4
         return self.default_edges
+
+    def getReversedCharsArrays(self):
+        N_E_S_W_Edges = self.default_edges
+        return [N_E_S_W_Edges[0][::-1],N_E_S_W_Edges[1][::-1],N_E_S_W_Edges[2][::-1],N_E_S_W_Edges[3][::-1]]
+
 
     def processsLinesIntoDefaultEdges(self,lines):
         # Get the 4 border strings into self.default_edges
@@ -67,96 +78,83 @@ class Tile:
         # process default edges to make 8 permutations
         # First entry
         # Default edge strings (read left-right, top-bottom)
-        N_S_E_W_Edges = self.default_edges
-
+        N_E_S_W_Edges = self.default_edges
+        
         # Reversed edge strings (read right-left, bottom-top)
-        rN_S_E_W_Edges = [N_S_E_W_Edges[0][::-1],N_S_E_W_Edges[1][::-1],N_S_E_W_Edges[2][::-1],N_S_E_W_Edges[3][::-1]]
+        rN_E_S_W_Edges = self.getReversedCharsArrays()
 
         ## N S E W
         self.rotations.append( [ 
-            self.charStringToInt( N_S_E_W_Edges[0]),
-            self.charStringToInt( N_S_E_W_Edges[1]),
-            self.charStringToInt( N_S_E_W_Edges[2]),
-            self.charStringToInt( N_S_E_W_Edges[3])
+            self.charStringToInt( N_E_S_W_Edges[0]),
+            self.charStringToInt( N_E_S_W_Edges[1]),
+            self.charStringToInt( N_E_S_W_Edges[2]),
+            self.charStringToInt( N_E_S_W_Edges[3])
         ])
         ## If we rotate left (ESWN)
         self.rotations.append( [ 
-            self.charStringToInt( N_S_E_W_Edges[1]),
-            self.charStringToInt( rN_S_E_W_Edges[2]), # Flip
-            self.charStringToInt( N_S_E_W_Edges[3]),
-            self.charStringToInt( rN_S_E_W_Edges[0]) # Flip
+            self.charStringToInt( N_E_S_W_Edges[1]),
+            self.charStringToInt( rN_E_S_W_Edges[2]), # Flip
+            self.charStringToInt( N_E_S_W_Edges[3]),
+            self.charStringToInt( rN_E_S_W_Edges[0]) # Flip
         ])
         ## If we rotate left (SWNE)
         self.rotations.append( [ 
-            self.charStringToInt( rN_S_E_W_Edges[2]), # Flip
-            self.charStringToInt( rN_S_E_W_Edges[3]), # Flip
-            self.charStringToInt( rN_S_E_W_Edges[0]), # Flip
-            self.charStringToInt( rN_S_E_W_Edges[1]) # Flip
+            self.charStringToInt( rN_E_S_W_Edges[2]), # Flip
+            self.charStringToInt( rN_E_S_W_Edges[3]), # Flip
+            self.charStringToInt( rN_E_S_W_Edges[0]), # Flip
+            self.charStringToInt( rN_E_S_W_Edges[1]) # Flip
         ])
         ## If we rotate left (WNES)
         self.rotations.append( [ 
-            self.charStringToInt( rN_S_E_W_Edges[3]), # Flip
-            self.charStringToInt(  N_S_E_W_Edges[0]),
-            self.charStringToInt( rN_S_E_W_Edges[1]), # Flip
-            self.charStringToInt(  N_S_E_W_Edges[2])
+            self.charStringToInt( rN_E_S_W_Edges[3]), # Flip
+            self.charStringToInt(  N_E_S_W_Edges[0]),
+            self.charStringToInt( rN_E_S_W_Edges[1]), # Flip
+            self.charStringToInt(  N_E_S_W_Edges[2])
         ])
 
         # Now we flip the original solution vertically
         # SENW
         self.rotations.append( [ 
-            self.charStringToInt( N_S_E_W_Edges[2]),
-            self.charStringToInt( rN_S_E_W_Edges[1]),
-            self.charStringToInt( N_S_E_W_Edges[0]),
-            self.charStringToInt( rN_S_E_W_Edges[3])
+            self.charStringToInt( N_E_S_W_Edges[2]),
+            self.charStringToInt( rN_E_S_W_Edges[1]),
+            self.charStringToInt( N_E_S_W_Edges[0]),
+            self.charStringToInt( rN_E_S_W_Edges[3])
         ])
         # If we rotate left (ENWS)
         self.rotations.append( [ 
-            self.charStringToInt( rN_S_E_W_Edges[1]),
-            self.charStringToInt( rN_S_E_W_Edges[0]),
-            self.charStringToInt( rN_S_E_W_Edges[3]),
-            self.charStringToInt( rN_S_E_W_Edges[2])
+            self.charStringToInt( rN_E_S_W_Edges[1]),
+            self.charStringToInt( rN_E_S_W_Edges[0]),
+            self.charStringToInt( rN_E_S_W_Edges[3]),
+            self.charStringToInt( rN_E_S_W_Edges[2])
         ])
         # If we rotate left (NWSE)
         self.rotations.append( [ 
-            self.charStringToInt( rN_S_E_W_Edges[0]),
-            self.charStringToInt( N_S_E_W_Edges[3]),
-            self.charStringToInt( rN_S_E_W_Edges[2]),
-            self.charStringToInt( N_S_E_W_Edges[1])
+            self.charStringToInt( rN_E_S_W_Edges[0]),
+            self.charStringToInt( N_E_S_W_Edges[3]),
+            self.charStringToInt( rN_E_S_W_Edges[2]),
+            self.charStringToInt( N_E_S_W_Edges[1])
         ])
         # If we rotate left (WSEN)
         self.rotations.append( [
-            self.charStringToInt( rN_S_E_W_Edges[3]),
-            self.charStringToInt( rN_S_E_W_Edges[2]),
-            self.charStringToInt( rN_S_E_W_Edges[1]),
-            self.charStringToInt( rN_S_E_W_Edges[0])
+            self.charStringToInt( N_E_S_W_Edges[3]),
+            self.charStringToInt( N_E_S_W_Edges[2]),
+            self.charStringToInt( N_E_S_W_Edges[1]),
+            self.charStringToInt( N_E_S_W_Edges[0])
         ])
-
-    
-    def calculateCycleRotations(self,n):
-        assert n == 0 or n == 4
-        listToCycle = self.rotations[0].copy()
-        assert len(listToCycle) == 4
-
-        for _ in [0,1,2]:
-            save = listToCycle.pop(0)
-            listToCycle.append(save)
-            self.rotations.append(listToCycle.copy())
-
-        save = listToCycle.pop(0)
-        listToCycle.append(save)
-        assert listToCycle == self.rotations[0] # End up back where you started
-        assert len(self.rotations) == 4 or len(self.rotations) == 8
-
 
     def getRotations(self):
         return self.rotations
 
-    def charStringToInt(self,charString):
+    def charToBinStr(self,charString):
         assert len(charString) == 10
         # ..#.#.#..#
         oneStr =charString.replace("#","1")
         zeroStr = oneStr.replace(".","0")
-        return int(zeroStr,2)
+        assert len(zeroStr) == 10
+        return zeroStr
+
+    def charStringToInt(self,charString):
+        return int(self.charToBinStr(charString),2)
 
     def getID(self):
         return self.id
@@ -215,6 +213,10 @@ def processInputFile(filePath):
     else :
         print("%s does not exist"%(filePath))
 
+    gr =math.sqrt(len(tiles))
+    print ("Grid is %d x %d"%(gr,gr))
+
+
     return tiles
 
 def getInputPath():
@@ -224,7 +226,8 @@ def getInputPath():
 def mainTask():
     input_path = getInputPath()
     tiles = processInputFile(input_path)
-    
+
+
 
 if __name__ == "__main__":
 
