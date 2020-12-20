@@ -98,40 +98,113 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual([rN,W,rS,E],rotations[6])
         self.assertEqual([W,S,E,N],rotations[7])
 
-        allNumbers =[]
-        for tile in tiles:
-            chars = tile.getCharsArrays()
-            for c in chars:
-                allNumbers.append(tile.charStringToInt(c))
-            rchars = tile.getReversedCharsArrays()
-            for c in rCharArrays:
-                allNumbers.append(tile.charStringToInt(c))
-        print(allNumbers)
+    def test_loadTestFileCheckTile2(self):
+        tiles = processInputFile( os.path.join(os.path.dirname(__file__),"test_input_2.txt") )
+        self.assertEqual([2311,1951,1171,1427,1489,2473,2971,2729,3079],getTileIDs(tiles))
+        ## Check second tile 1951
 
-        singularNumbers = []
-        for s in allNumbers:
-            c = allNumbers.count(s)
-            print("number %d count %d"%(s,c))
-            if c == 1:
-                singularNumbers.append(s)
-        print("only occur once %s"%(list(singularNumbers)))
+        self.assertEqual(1951,tiles[1].getID())
+        charArrays = tiles[1].getCharsArrays()
 
-        ## Corner tiles will have 4 singular numbers
+        self.assertEqual(charArrays[0],"#.##...##.")
+        self.assertEqual(charArrays[1],".#####..#.")
+        self.assertEqual(charArrays[2],"#...##.#..")
+        self.assertEqual(charArrays[3],"##.#..#..#")
         
-        for tile in tiles:
-            allTileNumbers =[]
-            chars = tile.getCharsArrays()
-            for c in chars:
-                allTileNumbers.append(tile.charStringToInt(c))
-            rchars = tile.getReversedCharsArrays()
-            for c in rCharArrays:
-                allTileNumbers.append(tile.charStringToInt(c))
-            nSingular = 0
-            for a in allTileNumbers:
-                if a in singularNumbers:
-                    nSingular = nSingular + 1
-            if nSingular > 2:
-                print("Corner tile %d"%(tile.getID()))
+        rCharArrays = tiles[1].getReversedCharsArrays()
+        self.assertEqual(rCharArrays[0],".##...##.#")
+        self.assertEqual(rCharArrays[1],".#..#####.")
+        self.assertEqual(rCharArrays[2],"..#.##...#")
+        self.assertEqual(rCharArrays[3],"#..#..#.##")
+
+        self.assertEqual("1011000110",tiles[0].charToBinStr(charArrays[0]))
+        self.assertEqual("0111110010",tiles[1].charToBinStr(charArrays[1]))
+        self.assertEqual("1000110100",tiles[1].charToBinStr(charArrays[2]))
+        self.assertEqual("1101001001",tiles[1].charToBinStr(charArrays[3]))
+
+        self.assertEqual("0110001101",tiles[1].charToBinStr(rCharArrays[0]))
+        self.assertEqual("0100111110",tiles[1].charToBinStr(rCharArrays[1]))
+        self.assertEqual("0010110001",tiles[1].charToBinStr(rCharArrays[2]))
+        self.assertEqual("1001001011",tiles[1].charToBinStr(rCharArrays[3]))
+
+        self.assertEqual(int("1011000110",2),tiles[1].charStringToInt(charArrays[0]))
+        self.assertEqual(int("0111110010",2),tiles[1].charStringToInt(charArrays[1]))
+        self.assertEqual(int("1000110100",2),tiles[1].charStringToInt(charArrays[2]))
+        self.assertEqual(int("1101001001",2),tiles[1].charStringToInt(charArrays[3]))
+
+        self.assertEqual(int("0110001101",2),tiles[1].charStringToInt(rCharArrays[0]))
+        self.assertEqual(int("0100111110",2),tiles[1].charStringToInt(rCharArrays[1]))
+        self.assertEqual(int("0010110001",2),tiles[1].charStringToInt(rCharArrays[2]))
+        self.assertEqual(int("1001001011",2),tiles[1].charStringToInt(rCharArrays[3]))
+
+        self.assertEqual(710,tiles[1].charStringToInt(charArrays[0]))
+        self.assertEqual(498,tiles[1].charStringToInt(charArrays[1]))
+        self.assertEqual(564,tiles[1].charStringToInt(charArrays[2]))
+        self.assertEqual(841,tiles[1].charStringToInt(charArrays[3]))
+
+        self.assertEqual(397,tiles[1].charStringToInt(rCharArrays[0]))
+        self.assertEqual(318,tiles[1].charStringToInt(rCharArrays[1]))
+        self.assertEqual(177,tiles[1].charStringToInt(rCharArrays[2]))
+        self.assertEqual(587,tiles[1].charStringToInt(rCharArrays[3]))
+
+        rotations = tiles[1].getRotations()
+        self.assertEqual(8,len(rotations))
+
+        defaultRotation = rotations[0]
+        self.assertEqual(4,len(defaultRotation))
+        N = 710
+        E = 498
+        S = 564
+        W = 841
+        rN = 397
+        rE = 318
+        rS = 177
+        rW = 587
+
+        self.assertEqual(N,tiles[1].charStringToInt(charArrays[0]))
+        self.assertEqual(E,tiles[1].charStringToInt(charArrays[1]))
+        self.assertEqual(S,tiles[1].charStringToInt(charArrays[2]))
+        self.assertEqual(W,tiles[1].charStringToInt(charArrays[3]))
+
+        # The 8 cycles should be
+        #  N,E,S,W
+        #  E,rS,W,rN
+        # rS,rW,rN,rE
+        # rW,N,rE,S
+
+        # S,rE,N,rW
+        # rE,rN,rW,rS
+        # rN,W,rS,E
+        # W,S,E,N
+
+        self.assertEqual([N,E,S,W],rotations[0])
+        self.assertEqual([ E,rS,W,rN],rotations[1])
+        self.assertEqual([rS,rW,rN,rE],rotations[2])
+        self.assertEqual([rW,N,rE,S],rotations[3])
+
+        self.assertEqual([S,rE,N,rW],rotations[4])
+        self.assertEqual([rE,rN,rW,rS],rotations[5])
+        self.assertEqual([rN,W,rS,E],rotations[6])
+        self.assertEqual([W,S,E,N],rotations[7])
+
+        # In the correct solution, tile 1951 is rotated to give 
+        #564,318,710,587
+
+        found = False
+        for i in range(8):
+            lN = tiles[1].getBorderTop(i)
+            lE = tiles[1].getBorderRight(i) 
+            lS = tiles[1].getBorderBottom(i) 
+            lW = tiles[1].getBorderLeft(i)
+            if ( lN == 564 ):
+                if ( lE== 318 ):
+                    if ( lS == 710 ):
+                        if ( lW == 587 ):
+                            found = True
+        self.assertTrue(found)
+        
+        checkAllPossibleArrangementsOf(tiles)
+
 
         ##checkAllPossibleArrangementsOf(tiles)
 

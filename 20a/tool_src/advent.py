@@ -290,8 +290,9 @@ def checkAllPossibleArrangementsOf(tiles):
                     fittedLeft = True
                     fittedTop = True
                     if 'left' in mustMatch:
-                        if tile.getBorderLeft(tryFittingRotation) != mustMatch['left']:
-                            fittedLeft = False                    
+                        nextTileRLeft = tile.getBorderLeft(tryFittingRotation)
+                        if nextTileRLeft != mustMatch['left']:
+                            fittedLeft = False
                             continue
                     if 'top' in mustMatch:
                         if tile.getBorderTop(tryFittingRotation) != mustMatch['top']:
@@ -300,6 +301,7 @@ def checkAllPossibleArrangementsOf(tiles):
                     if fittedLeft and fittedTop:
                         fittedPiece = True
                         fittedOrientation = tryFittingRotation
+                        print("Can place piece %d orientation %d"%(tileN,fittedOrientation))
                         break
                 
                 if (fittedPiece):
@@ -308,6 +310,16 @@ def checkAllPossibleArrangementsOf(tiles):
                 else:
                     #print("Could not fit piece %d in any orientation"%(tileN))
                     break
+            
+            if len(chosenRotations) == 9:
+                # Found solution
+                foundMatch = True
+                ids = []
+                for t in uniqueOrder:
+                    ids.append(t.getID())
+                print(ids)
+                print(chosenRotations)
+                break
 
         nOrdersTried = nOrdersTried + 1
         print("number of orders tried = %s"%(nOrdersTried))
@@ -375,6 +387,7 @@ def getInputPath():
 def mainTask():
     input_path = getInputPath()
     tiles = processInputFile(input_path)
+    checkAllPossibleArrangementsOf(tiles)
 
 
 
