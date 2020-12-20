@@ -203,10 +203,17 @@ class TestStringMethods(unittest.TestCase):
                             found = True
         self.assertTrue(found)
         
+        # 1951    2311
+        
+        #subsetOfTiles = []
+        #for tile in tiles:
+            #id = tile.getID()
+            #if id == 1951 or id == 2311 or id == 2729 or id == 1427:
+                 #subsetOfTiles.append(tile)
+        #self.assertEqual(4,len(subsetOfTiles))
+        #checkAllPossibleArrangementsOf(subsetOfTiles)
+    
         checkAllPossibleArrangementsOf(tiles)
-
-
-        ##checkAllPossibleArrangementsOf(tiles)
 
 
 

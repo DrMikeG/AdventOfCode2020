@@ -198,125 +198,133 @@ def findTileWithID(tiles,tileID):
         if tile.getID() == tileID:
             return tile
 
-def checkAllPossibleArrangementsOf(tiles):
-    # If there are n tiles
-    foundMatch = False
-    nOrdersTried = 0
+
+
+def collectCorners(tiles,puzzle):
     gridN = int(math.sqrt(len(tiles)))
-    topLeftID = 0
-    topRightID =0
-    bottomLeftID = 0
-    bottomRightID = 0
+    # The corner IDs are not dependent on rotation:
+    if (gridN == 3):
+        topLeftID = puzzle['fitted'][0].getID()
+        topRightID = puzzle['fitted'][2].getID()
+        bottomLeftID = puzzle['fitted'][7].getID()
+        bottomRightID = puzzle['fitted'][8].getID()
+    elif (gridN == 12):
+        topLeftID = puzzle['fitted'][0].getID()
+        topRightID = puzzle['fitted'][11].getID()
+        bottomLeftID = puzzle['fitted'][132].getID()
+        bottomRightID = puzzle['fitted'][143].getID()
 
+    print (topLeftID * topRightID * bottomLeftID * bottomRightID)
+
+
+def canFitTileInPositionAndOrientation(tiles,tile,orientation,position,puzzle):
+
+    if position == 0:
+        return True # can always fit the first tile
     
-    for uniqueOrder in permutations(tiles,len(tiles)):
+    gridN = int(math.sqrt(len(tiles)))
 
-        # The corner IDs are not dependent on rotation:
-        if (gridN == 3):
-            topLeftID = uniqueOrder[0].getID()
-            topRightID = uniqueOrder[2].getID()
-            bottomLeftID = uniqueOrder[7].getID()
-            bottomRightID = uniqueOrder[8].getID()
-        elif (gridN == 12):
-            topLeftID = uniqueOrder[0].getID()
-            topRightID = uniqueOrder[11].getID()
-            bottomLeftID = uniqueOrder[132].getID()
-            bottomRightID = uniqueOrder[143].getID()
+    bordersToCheck = ['top','left'] # Top and Left borders to test
 
-        chosenRotations = {}
-        #piece 1 has 8 starting positions
+    if position < gridN:
+        # first row
+        bordersToCheck = ['left'] #  Left only
+    if position % gridN == 0:
+        # first colomn
+        bordersToCheck = ['top'] # Top only
+
+    matches = True
+
+    if 'top' in bordersToCheck:
+        # What is the border above?
+        tileAbove = puzzle['fitted'][position - gridN]
+        rotationAbove = puzzle['fittedOrientation'][position - gridN]
+        matches = (tile.getBorderTop(orientation) == tileAbove.getBorderBottom(rotationAbove))
+
+    if matches:
+        if 'left' in bordersToCheck:
+            # What is the border above?
+            tileLeft = puzzle['fitted'][position - 1]
+            rotationLeft = puzzle['fittedOrientation'][position - 1]
+            matches = (tile.getBorderLeft(orientation) == tileLeft.getBorderRight(rotationLeft))
+
+    return matches
+
+def canFitRemainingTiles(tiles,puzzle):
+    # Some times have been fitted
+    pos = puzzle['pos']
+    #print("The next position to fill is %d"%(pos))
+    remainingTiles = tiles.copy()
+    #print("%d tiles"%(len(remainingTiles)))
+    for used in puzzle['fitted']:
+        remainingTiles.remove(puzzle['fitted'][used])
+        #print("%d tiles still to fit"%(len(remainingTiles)))
+
+    if len(remainingTiles) == 0:
+        return True
+
+    for nextTile in remainingTiles:
         for rotation in range(8):
-            #print("Trying rotation %d of piece %d as piece 1"%(rotation,uniqueOrder[0].getID()))
-            chosenRotations.clear()
-            chosenRotations[0] = rotation
+            #print("Testing nexttile %d in orientation %d in positions %s"%(nextTile.getID(),rotation,pos))
+            #N=nextTile.getBorderTop(rotation)
+            #E=nextTile.getBorderRight(rotation)
+            #S=nextTile.getBorderBottom(rotation)
+            #W=nextTile.getBorderLeft(rotation)
+            #print(list([N,E,S,W]))
+            #if [1,2311,231, 616, 210, 318] == [pos,nextTile.getID(),N,E,S,W]:
+            #    print(list([N,E,S,W]))
+            #elif [2,2799,710, 9] == [pos,nextTile.getID(),N,E]:
+            #    print(list([N,E,S,W]))
 
-            #print("North == %d"%(uniqueOrder[0].getBorderTop(rotation)))
-            #print("East == %d"%(uniqueOrder[0].getBorderRight(rotation)))
-            #print("South == %d"%(uniqueOrder[0].getBorderBottom(rotation)))
-            #print("West == %d"%(uniqueOrder[0].getBorderLeft(rotation)))
-
-            # Try to fit every other tile for each of it's orientation
-            # Is there ever more than one matching edge?
-
-            # For every possible rotation of every tile, is there a solution?
-            tileN = 0
-            for tile in uniqueOrder:
-
-                if tileN == 0:
-                    tileN = tileN + 1
-                    continue # first tile always matches
-
-                bordersToCheck = ['top','left'] # Top and Left borders to test
-
-                if tileN < gridN:
-                    # first row
-                    bordersToCheck = ['left'] #  Left only
-                if tileN % gridN == 0:
-                    # first colomn
-                    bordersToCheck = ['top'] # Top only
-
-                mustMatch = {}
-                if 'top' in bordersToCheck:
-                    # What is the border above?
-                    tileAbove = tileN - gridN
-                    rotationAbove = chosenRotations[tileAbove]
-                    mustMatch['top'] = uniqueOrder[tileAbove].getBorderBottom(rotationAbove)
-                if 'left' in bordersToCheck:
-                    # What is the border above?
-                    tileLeft = tileN - 1
-                    rotationLeft = chosenRotations[tileLeft]
-                    #print("Right == %d"%(uniqueOrder[0].getBorderRight(rotation)))
-                    #print("Bottom == %d"%(uniqueOrder[tileLeft].getBorderBottom(rotationLeft)))
-                    #print("Right == %d"%(uniqueOrder[0].getBorderRight(rotation)))
-                    #print("Bottom == %d"%(uniqueOrder[tileLeft].getBorderBottom(rotationLeft)))
-                    mustMatch['left'] = uniqueOrder[tileLeft].getBorderRight(rotationLeft)
-
-                # Is there any rotation of this tile which matches?
-                fittedPiece = False
-                fittedOrientation = 0
-                for tryFittingRotation in range(8):
-                    fittedLeft = True
-                    fittedTop = True
-                    if 'left' in mustMatch:
-                        nextTileRLeft = tile.getBorderLeft(tryFittingRotation)
-                        if nextTileRLeft != mustMatch['left']:
-                            fittedLeft = False
-                            continue
-                    if 'top' in mustMatch:
-                        if tile.getBorderTop(tryFittingRotation) != mustMatch['top']:
-                            fittedTop = False
-                            continue
-                    if fittedLeft and fittedTop:
-                        fittedPiece = True
-                        fittedOrientation = tryFittingRotation
-                        #print("Can place piece %d orientation %d"%(tileN,fittedOrientation))
-                        break
-                
-                if (fittedPiece):
-                    chosenRotations[tileN] = fittedOrientation
-                    tileN = tileN + 1
+            if not canFitTileInPositionAndOrientation(tiles,nextTile,rotation,pos,puzzle):
+                continue
+            else:
+                # Descend
+                puzzle['fitted'][pos] = nextTile
+                puzzle['fittedOrientation'][pos] = rotation
+                puzzle['pos'] = pos + 1
+                if canFitRemainingTiles(tiles,puzzle):
+                    return True
                 else:
-                    #print("Could not fit piece %d in any orientation"%(tileN))
-                    break
-            
-            if len(chosenRotations) == 9:
-                # Found solution
-                foundMatch = True
-                ids = []
-                for t in uniqueOrder:
-                    ids.append(t.getID())
-                print(ids)
-                print(chosenRotations)
-                print (topLeftID * topRightID * bottomLeftID * bottomRightID)
-                return
+                    # back track
+                    puzzle['fitted'].pop(pos)
+                    puzzle['fittedOrientation'].pop(pos)
+                    puzzle['pos'] = pos
 
-        nOrdersTried = nOrdersTried + 1
-        print("number of orders tried = %s"%(nOrdersTried))
-    
-    if foundMatch:
-        print (topLeftID * topRightID * bottomLeftID * bottomRightID)
-    
-    return foundMatch
+    return False
+
+def checkAllPossibleArrangementsOf(tiles):
+
+
+    puzzle = {'fitted' : {}, 'fittedOrientation' : {}, 'pos' : 0}
+
+    for firstTile in tiles:
+        for rotation in range(8):
+            print("Testing first tile %d in orientation %d in positions %s"%(firstTile.getID(),rotation,0))
+            
+            N=firstTile.getBorderTop(rotation)
+            E=firstTile.getBorderRight(rotation)
+            S=firstTile.getBorderBottom(rotation)
+            W=firstTile.getBorderLeft(rotation)
+            #print(list([N,E,S,W]))
+            #if [1951,564, 318, 710, 587] == [firstTile.getID(),N,E,S,W]:
+                #print(list([N,E,S,W]))
+            
+
+
+            puzzle['fitted'][0] = firstTile
+            puzzle['fittedOrientation'][0] = rotation
+            puzzle['pos'] = 1
+
+            if canFitRemainingTiles(tiles,puzzle):
+                collectCorners(tiles,puzzle)
+                return
+            else:
+                # back track
+                puzzle['fitted'].pop(0)
+                puzzle['fittedOrientation'].pop(0)
+                puzzle['pos'] = 0
+           
 
 def processLineOfInputIntoRuleStruct(line,rules):
     # "1: 2 3 | 3 2"
