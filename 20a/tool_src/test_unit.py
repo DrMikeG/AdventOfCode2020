@@ -21,7 +21,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(charArrays[2],"..###..###")
         self.assertEqual(charArrays[3],".#####..#.")
         rotations = tiles[0].getRotations()
-        self.assertEqual(4,len(rotations))
+        self.assertEqual(8,len(rotations))
 
         defaultRotation = rotations[0]
         self.assertEqual(4,len(defaultRotation))

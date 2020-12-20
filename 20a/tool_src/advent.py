@@ -18,7 +18,6 @@ class Tile:
 
     def __init__(self, lines):
         self.default_edges = []
-        self.flipped_edges = []
         self.rotations = []
         self.id = -1
         assert len(lines) == 11
@@ -60,75 +59,77 @@ class Tile:
         assert len(self.default_edges) == 4
         return self.default_edges
 
-    def getFlippedCharsArrays(self):
-        assert len(self.flipped_edges) == 4
-        return self.flipped_edges
-
     def processsLinesIntoDefaultEdges(self,lines):
         # Get the 4 border strings into self.default_edges
         self.calcCharsArrayFromLines(lines)
-
-    def flipDefaultHorizontally(self):
-        chars = self.getCharsArrays()
-        assert len(chars) == 4 # N E S W
-        self.flipped_edges = []
-        self.flipped_edges.append(chars[0][::-1])   # North is read right to left
-        self.flipped_edges.append(chars[3])         # West replaces East
-        self.flipped_edges.append(chars[2][::-1])   # South is read right to left
-        self.flipped_edges.append(chars[1])         # East replaces West
-
-    def defaultFourInts(self):
-        fourInts = []
-        for st in self.default_edges:
-            fourInts.append(self.charStringToInt(st))
-        return fourInts
-    
-    def flippedFourInts(self):
-        fourInts = []
-        for st in self.flipped_edges:
-            fourInts.append(self.charStringToInt(st))
-        return fourInts
 
     def calculateRotations(self):
         # process default edges to make 8 permutations
         # First entry
         # Default edge strings (read left-right, top-bottom)
         N_S_E_W_Edges = self.default_edges
+
         # Reversed edge strings (read right-left, bottom-top)
         rN_S_E_W_Edges = [N_S_E_W_Edges[0][::-1],N_S_E_W_Edges[1][::-1],N_S_E_W_Edges[2][::-1],N_S_E_W_Edges[3][::-1]]
 
-        self.rotations.append(self.defaultFourInts())
-        # The default four ints are read left to right for N and S
-        # Top to bottom for E and W.
-        # If we rotate the image 90 degrees anti-clockwise,
-        # Then E is now at the top, and is correctly read left to right (== top to bottom)
-        # S is now E, but needs to be read top to bottom (which is the reverse of how it was previously read)
-        # W is now S, and is correctly read left to right (== top to bottom)
-        # N is now W, but needs to be read top to bottom (which is the reverse of how it was previously read)
+        ## N S E W
+        self.rotations.append( [ 
+            self.charStringToInt( N_S_E_W_Edges[0]),
+            self.charStringToInt( N_S_E_W_Edges[1]),
+            self.charStringToInt( N_S_E_W_Edges[2]),
+            self.charStringToInt( N_S_E_W_Edges[3])
+        ])
+        ## If we rotate left (ESWN)
+        self.rotations.append( [ 
+            self.charStringToInt( N_S_E_W_Edges[1]),
+            self.charStringToInt( rN_S_E_W_Edges[2]), # Flip
+            self.charStringToInt( N_S_E_W_Edges[3]),
+            self.charStringToInt( rN_S_E_W_Edges[0]) # Flip
+        ])
+        ## If we rotate left (SWNE)
+        self.rotations.append( [ 
+            self.charStringToInt( rN_S_E_W_Edges[2]), # Flip
+            self.charStringToInt( rN_S_E_W_Edges[3]), # Flip
+            self.charStringToInt( rN_S_E_W_Edges[0]), # Flip
+            self.charStringToInt( rN_S_E_W_Edges[1]) # Flip
+        ])
+        ## If we rotate left (WNES)
+        self.rotations.append( [ 
+            self.charStringToInt( rN_S_E_W_Edges[3]), # Flip
+            self.charStringToInt(  N_S_E_W_Edges[0]),
+            self.charStringToInt( rN_S_E_W_Edges[1]), # Flip
+            self.charStringToInt(  N_S_E_W_Edges[2])
+        ])
 
-        ## Make ESWN (rotation once anti-clockwise)
+        # Now we flip the original solution vertically
+        # SENW
         self.rotations.append( [ 
-            self.charStringToInt( N_S_E_W_Edges[1]), # new north = East in standard reading
-            self.charStringToInt(rN_S_E_W_Edges[2]), # new east  = South in reverse reading
-            self.charStringToInt( N_S_E_W_Edges[3]), # new south = West in standard reading
-            self.charStringToInt(rN_S_E_W_Edges[0]), # new west = North in reverse reading
-        ] )
-        
-        ## Make SWNE (rotation once anti-clockwise)
+            self.charStringToInt( N_S_E_W_Edges[2]),
+            self.charStringToInt( rN_S_E_W_Edges[1]),
+            self.charStringToInt( N_S_E_W_Edges[0]),
+            self.charStringToInt( rN_S_E_W_Edges[3])
+        ])
+        # If we rotate left (ENWS)
         self.rotations.append( [ 
-            self.charStringToInt(rN_S_E_W_Edges[2]), # new north = South in reverse reading
-            self.charStringToInt(rN_S_E_W_Edges[3]), # new east  = West in reverse reading
-            self.charStringToInt(rN_S_E_W_Edges[0]), # new south = North in reverse reading
-            self.charStringToInt(rN_S_E_W_Edges[1]), # new west =  East in reverse reading
-        ] )
-        
-        ## Make WNES (rotation once anti-clockwise)
+            self.charStringToInt( rN_S_E_W_Edges[1]),
+            self.charStringToInt( rN_S_E_W_Edges[0]),
+            self.charStringToInt( rN_S_E_W_Edges[3]),
+            self.charStringToInt( rN_S_E_W_Edges[2])
+        ])
+        # If we rotate left (NWSE)
         self.rotations.append( [ 
-            self.charStringToInt(rN_S_E_W_Edges[3]), # new north = WEST in reverse reading
-            self.charStringToInt( N_S_E_W_Edges[0]), # new east  = NORTH in standard reading
-            self.charStringToInt(rN_S_E_W_Edges[1]), # new south = EAST in reverse reading
-            self.charStringToInt( N_S_E_W_Edges[2]), # new west = SOUTH in standard reading
-        ] )
+            self.charStringToInt( rN_S_E_W_Edges[0]),
+            self.charStringToInt( N_S_E_W_Edges[3]),
+            self.charStringToInt( rN_S_E_W_Edges[2]),
+            self.charStringToInt( N_S_E_W_Edges[1])
+        ])
+        # If we rotate left (WSEN)
+        self.rotations.append( [
+            self.charStringToInt( rN_S_E_W_Edges[3]),
+            self.charStringToInt( rN_S_E_W_Edges[2]),
+            self.charStringToInt( rN_S_E_W_Edges[1]),
+            self.charStringToInt( rN_S_E_W_Edges[0])
+        ])
 
     
     def calculateCycleRotations(self,n):
