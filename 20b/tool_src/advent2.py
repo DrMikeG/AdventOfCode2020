@@ -41,64 +41,32 @@ def processInputFile(filePath):
 def getInputPath():
     return os.path.join(os.path.dirname(__file__),"output.txt")
 
-def flipNorthToSouth(original):
-    smallOutputArray = [['_' for i in range(20)] for j in range(20)]
-    for r in range(20):
-        for c in range(20):
-            smallOutputArray[19-r][c] = original[r][c]
-    return smallOutputArray
-
-def rotate90(original):
-    rotated = list(zip(*original[::-1]))
-    return rotated
-
-def rotate180(original):
-    return rotate90(rotate90(original))
-
-def rotate270(original):
-    return rotate90(rotate90(rotate90(original)))
-
 def seaMonsters():
-    eigthSeaMonsters = []
-    smallOutputArray = [[' ' for i in range(20)] for j in range(20)]
-    str1 = "                  # "
-    r = 9
-    c = 0
-    for ch in str1:
-        smallOutputArray[r][c] = ch
-        c = c + 1
-    str2 = "#    ##    ##    ###"
-    r = r+1
-    c = 0
-    for ch in str2:
-        smallOutputArray[r][c] = ch
-        c = c + 1
-    str3 = " #  #  #  #  #  #   "
-    r = r+1
-    c = 0
-    for ch in str3:
-        smallOutputArray[r][c] = ch
-        c = c + 1
-    eigthSeaMonsters.append(smallOutputArray)
-    eigthSeaMonsters.append(rotate90(smallOutputArray))
-    eigthSeaMonsters.append(rotate180(smallOutputArray))
-    eigthSeaMonsters.append(rotate270(smallOutputArray))
-    smallOutputArray= flipNorthToSouth(smallOutputArray)
-    eigthSeaMonsters.append(smallOutputArray)
-    eigthSeaMonsters.append(rotate90(smallOutputArray))
-    eigthSeaMonsters.append(rotate180(smallOutputArray))
-    eigthSeaMonsters.append(rotate270(smallOutputArray))
-    assert len(eigthSeaMonsters)==8
-    return eigthSeaMonsters
+    filePath = os.path.join(os.path.dirname(__file__),"my_monster_input.txt")
+    f = open(filePath, "r")
+    
+    monsters = []
+    monster = []
+    for x in f:
+        if x.strip() == "-":
+            monsters.append(monster.copy())
+            monster = []
+        else:
+            monsterRow = []
+            for c in x:
+                if not c == "\n":
+                    monsterRow.append(c)
+            monster.append(monsterRow)
+    monsters.append(monster.copy())
+    assert len(monsters)==8
+    return monsters
 
 def ifSeaMonsterMarkPositions(image,rBase,cBase,seaMonster):
-    assert len(seaMonster) == 20
-    assert len(seaMonster[0]) == 20
     imageWidth = len(image[0])-1
     imageHeight = len(image)-1
     toMark = []
-    for r in range(20):
-        for c in range(20):
+    for r in range(len(seaMonster)):
+        for c in range(len(seaMonster[0])):
             if (seaMonster[r][c] =="#"):
                 toMark.append((r+rBase,c+cBase))
                 if (r+rBase < 0):

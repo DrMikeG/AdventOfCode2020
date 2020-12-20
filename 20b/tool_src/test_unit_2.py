@@ -18,11 +18,16 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(len(image[0]),20)
         monsters = seaMonsters()
         self.assertEqual(len(monsters),8)
+        for monster in monsters:
+            h = len(monster)
+            w = len(monster[0])
+            self.assertTrue( (h == 3 and w == 20) or (w == 3 and h == 20))
+
         for r in range(1):
             for c in range(1):
                 ifSeaMonsterMarkPositions(image,r,c,monsters[0])
-        writeImageToFile(image)
-"""
+        #writeImageToFile(image)
+
     def test_loadTestFile(self):
         image = processInputFile( os.path.join(os.path.dirname(__file__),"test_output.txt") )
         self.assertEqual(len(image),24)
@@ -33,7 +38,7 @@ class TestStringMethods(unittest.TestCase):
             for c in range(-20,24+20):
                 ifSeaMonsterMarkPositions(image,r,c,monsters[0])
         writeImageToFile(image)
-"""
+
 
 if __name__ == '__main__':
     unittest.main()
