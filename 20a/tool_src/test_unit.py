@@ -5,6 +5,7 @@ from advent import getInputPath
 from advent import processInputFile
 from advent import getTileIDs
 from advent import Tile
+from advent import checkAllPossibleArrangementsOf
 
 class TestStringMethods(unittest.TestCase):
 
@@ -97,9 +98,42 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual([rN,W,rS,E],rotations[6])
         self.assertEqual([W,S,E,N],rotations[7])
 
+        allNumbers =[]
+        for tile in tiles:
+            chars = tile.getCharsArrays()
+            for c in chars:
+                allNumbers.append(tile.charStringToInt(c))
+            rchars = tile.getReversedCharsArrays()
+            for c in rCharArrays:
+                allNumbers.append(tile.charStringToInt(c))
+        print(allNumbers)
 
+        singularNumbers = []
+        for s in allNumbers:
+            c = allNumbers.count(s)
+            print("number %d count %d"%(s,c))
+            if c == 1:
+                singularNumbers.append(s)
+        print("only occur once %s"%(list(singularNumbers)))
 
+        ## Corner tiles will have 4 singular numbers
+        
+        for tile in tiles:
+            allTileNumbers =[]
+            chars = tile.getCharsArrays()
+            for c in chars:
+                allTileNumbers.append(tile.charStringToInt(c))
+            rchars = tile.getReversedCharsArrays()
+            for c in rCharArrays:
+                allTileNumbers.append(tile.charStringToInt(c))
+            nSingular = 0
+            for a in allTileNumbers:
+                if a in singularNumbers:
+                    nSingular = nSingular + 1
+            if nSingular > 2:
+                print("Corner tile %d"%(tile.getID()))
 
+        ##checkAllPossibleArrangementsOf(tiles)
 
 
 
