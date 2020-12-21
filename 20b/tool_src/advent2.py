@@ -30,16 +30,22 @@ def writeImageToFile(outputArray):
         f.write("\n")
     f.close()
 
-def flipNorthToSouth(original):
-    smallOutputArray = [['_' for i in range(96)] for j in range(96)]
-    for r in range(96):
-        for c in range(96):
-            smallOutputArray[7-r][c] = original[r][c]
+def flipNorthToSouth(original,sq):
+    smallOutputArray = [['_' for i in range(sq)] for j in range(sq)]
+    for r in range(sq):
+        for c in range(sq):
+            smallOutputArray[(sq-1)-r][c] = original[r][c]
     return smallOutputArray
 
 def rotate90(original):
     rotated = list(zip(*original[::-1]))
-    return rotated
+    untuple = []
+    for r in rotated:
+        newR = []
+        for c in r:
+            newR.append(c)
+        untuple.append(newR)
+    return untuple
 
 def rotate180(original):
     return rotate90(rotate90(original))
@@ -55,16 +61,15 @@ def processInputFile(filePath):
         for x in f:
             imageRow = []
             for c in x.strip():
-                imageRow.append(c)
+                imageRow.append(str(c))
             image.append(imageRow)
         f.close()
-        
     else :
         print("%s does not exist"%(filePath))
     return image
 
 def getInputPath():
-    return os.path.join(os.path.dirname(__file__),"output.txt")
+    return os.path.join(os.path.dirname(__file__),"output_without_borders.txt")
 
 def seaMonsters():
     filePath = os.path.join(os.path.dirname(__file__),"my_monster_input.txt")
@@ -88,6 +93,7 @@ def seaMonsters():
     return monsters
 
 def ifSeaMonsterMarkPositions(image,rBase,cBase,seaMonster):
+
     imageWidth = len(image[0])-1
     imageHeight = len(image)-1
     toMark = []
@@ -108,7 +114,9 @@ def ifSeaMonsterMarkPositions(image,rBase,cBase,seaMonster):
                     return False
     print("Found sea monster at (%d,%d)"%(rBase,cBase))
     for rc in toMark:
-        image[rc[0]][rc[1]] = "O"
+        r = rc[0]
+        c = rc[1]
+        image[r][c] = "O"
     return True
 
 def mainTask():
@@ -117,10 +125,6 @@ def mainTask():
     assert len(image) == 96
     assert len(image[0]) == 96
 
-
-
-countHashes
-    
 
 
 if __name__ == "__main__":
