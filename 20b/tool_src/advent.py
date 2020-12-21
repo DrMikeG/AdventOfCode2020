@@ -382,10 +382,11 @@ def getInputPath():
     return os.path.join(os.path.dirname(__file__),"input.txt")
 
 def flipNorthToSouth(original):
-    smallOutputArray = [['_' for i in range(8)] for j in range(8)]
-    for r in range(8):
-        for c in range(8):
-            smallOutputArray[7-r][c] = original[r][c]
+    sq = 10
+    smallOutputArray = [['_' for i in range(sq)] for j in range(sq)]
+    for r in range(sq):
+        for c in range(sq):
+            smallOutputArray[(sq-1)-r][c] = original[r][c]
     return smallOutputArray
 
 def rotate90(original):
@@ -404,86 +405,88 @@ def rotate270(original):
 
 def writeAt(outputArray,cBase,rBase,tile,orientation):
 
+    sq = 10
+
     if orientation == 0:
         # simple write
         lines = tile.getLines()
         assert len(lines) == 11
         r = 0
-        for dirtyLine in lines[2:-1:]:
+        for dirtyLine in lines[1:]:
             c = 0
             cleanLine = dirtyLine.strip()
-            assert len(cleanLine) == 10
-            for ch in cleanLine[1:-1]:
+            assert len(cleanLine) == 10 # 10 chars wide
+            for ch in cleanLine[0:]:
                 outputArray[rBase+r][cBase+c] = ch
                 c = c + 1
             r = r + 1
         return
 
-    smallOutputArray = [['_' for i in range(8)] for j in range(8)]
+    smallOutputArray = [['_' for i in range(sq)] for j in range(sq)]
     lines = tile.getLines()
     assert len(lines) == 11
     r = 0
-    for dirtyLine in lines[2:-1:]:
+    for dirtyLine in lines[1:]: # skip title line
         c = 0
         cleanLine = dirtyLine.strip()
         assert len(cleanLine) == 10
-        for ch in cleanLine[1:-1]:
+        for ch in cleanLine[0:]: # all 10 chars here
             smallOutputArray[r][c] = ch
             c = c + 1
         r = r + 1
 
     if orientation == 1:
         smallOutputArray = rotate270(smallOutputArray)
-        for r in range(8):
-            for c in range(8):
+        for r in range(sq):
+            for c in range(sq):
                 outputArray[rBase+r][cBase+c] = smallOutputArray[r][c]
         return
 
     if orientation == 2:
         smallOutputArray = rotate180(smallOutputArray)
-        for r in range(8):
-            for c in range(8):
+        for r in range(sq):
+            for c in range(sq):
                 outputArray[rBase+r][cBase+c] = smallOutputArray[r][c]
         return
 
     if orientation == 3:
         smallOutputArray = rotate90(smallOutputArray)
-        for r in range(8):
-            for c in range(8):
+        for r in range(sq):
+            for c in range(sq):
                 outputArray[rBase+r][cBase+c] = smallOutputArray[r][c]
         return
 
     smallOutputArray = flipNorthToSouth(smallOutputArray)
     
     if orientation == 4:
-        for r in range(8):
-            for c in range(8):
+        for r in range(sq):
+            for c in range(sq):
                 outputArray[rBase+r][cBase+c] = smallOutputArray[r][c]
         return
 
     if orientation == 5:
         smallOutputArray = rotate270(smallOutputArray)
-        for r in range(8):
-            for c in range(8):
+        for r in range(sq):
+            for c in range(sq):
                 outputArray[rBase+r][cBase+c] = smallOutputArray[r][c]
         return
 
     if orientation == 6:
         smallOutputArray = rotate180(smallOutputArray)
-        for r in range(8):
-            for c in range(8):
+        for r in range(sq):
+            for c in range(sq):
                 outputArray[rBase+r][cBase+c] = smallOutputArray[r][c]
         return
 
     if orientation == 7:
         smallOutputArray = rotate90(smallOutputArray)
-        for r in range(8):
-            for c in range(8):
+        for r in range(sq):
+            for c in range(sq):
                 outputArray[rBase+r][cBase+c] = smallOutputArray[r][c]
         return
 
 def writeImageToFile(outputArray):
-    f = open(os.path.join(os.path.dirname(__file__),"output.txt"), "w")
+    f = open(os.path.join(os.path.dirname(__file__),"output_with_borders.txt"), "w")
     for line in outputArray:
         # write line to output file
         for c in line:
@@ -491,6 +494,10 @@ def writeImageToFile(outputArray):
         f.write("\n")
     f.close()
 
+def findTileIndexFromID(tiles,id):
+    for i in range(len(tiles)):
+        if tiles[i].getID() == id:
+            return i
 
 def mainTask():
     input_path = getInputPath()
@@ -501,15 +508,20 @@ def mainTask():
     #x = [[foo for i in range(10)] for j in range(10)]
     # x is now a 10x10 array of 'foo' (which can depend on i and j if you want)
 
-    outputArray = [['_' for i in range(12 * 8)] for j in range(12 * 8)]
+    outputArray = [['_' for i in range(12 * 10)] for j in range(12 * 10)]
 
     i = 0
     for r in range(12):
         for c in range(12):
+            #tile = tiles[24]
+            #orientation = 1
             tile = puzzle['fitted'][i]
             orientation = puzzle['fittedOrientation'][i]
-            writeAt(outputArray,r*8,c*8,tile,orientation)
+            tileIndex =findTileIndexFromID(tiles,tile.getID())
+            print("Printing tile index %d orientation %d at (%d,%d)"%(tileIndex,orientation,r,c))
+            writeAt(outputArray,c*10,r*10,tile,orientation)
             i=i+1
+
     writeImageToFile(outputArray)
 
 
