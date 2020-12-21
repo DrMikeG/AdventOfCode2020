@@ -5,13 +5,17 @@ from advent import getInputPath
 from advent import processInputFile
 from advent import intersectAllCombinations
 from advent import hasUniqueIngredient
+from advent import removeKnownAllergens
+from advent import whichAllegensAreNotKnown
+from advent import processInputFile2
 class TestStringMethods(unittest.TestCase):
 
     def test_isFile(self):
         self.assertTrue( getInputPath() )
 
     def test_loadTestFile(self):
-        struct = processInputFile(os.path.join(os.path.dirname(__file__),"test_input_2.txt"))
+        filepath = os.path.join(os.path.dirname(__file__),"test_input_2.txt")
+        struct = processInputFile(filepath)
         self.assertEqual(len(struct),3)
         self.assertTrue("dairy" in struct)
         self.assertTrue("soy" in struct)
@@ -29,6 +33,23 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual( (False,""), hasUniqueIngredient("fish",struct))
         self.assertEqual( (False,""), hasUniqueIngredient("soy",struct))
         
+        known = removeKnownAllergens(struct)
+        self.assertEqual( len(known), 3)
+
+        allClear = []
+        for key in struct:
+            itemArrays = struct[key]
+            for itemArray in itemArrays:
+                for item in itemArray:
+                    assert len(item) == 2
+                    if item[1] == "":
+                        allClear.append(item[0])
+
+        allClearSet = set(allClear)
+        print(allClearSet )
+        print(len(allClearSet))
+
+        processInputFile2(filepath,allClear)
     #def test_loadFile(self):
         #processInputFile(getInputPath())
     
