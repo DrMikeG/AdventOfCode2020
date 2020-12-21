@@ -13,14 +13,39 @@ from itertools import permutations
 #For each time, enumerate its 8 possible rotations
 #Manually check one tile
 
+def countHashes(outputArray):
+    sum = 0
+    for line in outputArray:
+        for c in line:
+            if c == "#":
+                sum = sum + 1
+    return sum
+
 def writeImageToFile(outputArray):
-    f = open(os.path.join(os.path.dirname(__file__),"my_monster_output.txt"), "a")
+    f = open(os.path.join(os.path.dirname(__file__),"my_monster_output.txt"), "w")
     for line in outputArray:
         # write line to output file
         for c in line:
             f.write(c)
         f.write("\n")
     f.close()
+
+def flipNorthToSouth(original):
+    smallOutputArray = [['_' for i in range(96)] for j in range(96)]
+    for r in range(96):
+        for c in range(96):
+            smallOutputArray[7-r][c] = original[r][c]
+    return smallOutputArray
+
+def rotate90(original):
+    rotated = list(zip(*original[::-1]))
+    return rotated
+
+def rotate180(original):
+    return rotate90(rotate90(original))
+
+def rotate270(original):
+    return rotate90(rotate90(rotate90(original)))
 
 def processInputFile(filePath):
 
@@ -57,6 +82,7 @@ def seaMonsters():
                 if not c == "\n":
                     monsterRow.append(c)
             monster.append(monsterRow)
+    f.close()
     monsters.append(monster.copy())
     assert len(monsters)==8
     return monsters
@@ -92,9 +118,8 @@ def mainTask():
     assert len(image[0]) == 96
 
 
-    for s in seaMonsters():
-        writeImageToFile(s)
 
+countHashes
     
 
 

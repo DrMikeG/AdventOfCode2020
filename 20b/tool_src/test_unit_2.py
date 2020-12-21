@@ -6,37 +6,32 @@ from advent2 import processInputFile
 from advent2 import seaMonsters
 from advent2 import ifSeaMonsterMarkPositions
 from advent2 import writeImageToFile
-
+from advent2 import countHashes
+from advent2 import rotate90
+from advent2 import flipNorthToSouth
 class TestStringMethods(unittest.TestCase):
 
     def test_isFile(self):
         self.assertTrue( getInputPath() )
 
-    def test_loadTestFile2(self):
-        image = processInputFile( os.path.join(os.path.dirname(__file__),"test_output_2.txt") )
-        self.assertEqual(len(image),3)
-        self.assertEqual(len(image[0]),20)
+    def test_loadRealFile(self):
+        image = processInputFile( os.path.join(os.path.dirname(__file__),"output.txt") )
         monsters = seaMonsters()
-        self.assertEqual(len(monsters),8)
-        for monster in monsters:
-            h = len(monster)
-            w = len(monster[0])
-            self.assertTrue( (h == 3 and w == 20) or (w == 3 and h == 20))
+        for _ in range(4):
+            for r in range(120):
+                for c in range(120):
+                    ifSeaMonsterMarkPositions(image,r,c,monsters[0])
+            image = rotate90(image)
+        
+        image = flipNorthToSouth(image)
+        for _ in range(4):
+            for r in range(120):
+                for c in range(120):
+                    ifSeaMonsterMarkPositions(image,r,c,monsters[0])
+            image = rotate90(image)
 
-        for r in range(1):
-            for c in range(1):
-                ifSeaMonsterMarkPositions(image,r,c,monsters[0])
-        #writeImageToFile(image)
+        print(countHashes(image))
 
-    def test_loadTestFile(self):
-        image = processInputFile( os.path.join(os.path.dirname(__file__),"test_output.txt") )
-        self.assertEqual(len(image),24)
-        self.assertEqual(len(image[0]),24)
-        monsters = seaMonsters()
-        self.assertEqual(len(monsters),8)
-        for r in range(-20,24+20):
-            for c in range(-20,24+20):
-                ifSeaMonsterMarkPositions(image,r,c,monsters[0])
         writeImageToFile(image)
 
 
