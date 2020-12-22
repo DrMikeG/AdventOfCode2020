@@ -25,9 +25,13 @@ class TestStringMethods(unittest.TestCase):
     def test_playRealGame(self):
         player1Dec = [41,26,29,11,50,38,42,20,13, 9,40,43,10,24,35,30,23,15,31,48,27,44,16,12,14]
         player2Dec = [18, 6,32,37,25,21,33,28, 7, 8,45,46,49, 5,19, 2,39, 4,17, 3,22, 1,34,36,47]
-        winningDeck = playGame(player1Dec,player2Dec)
-        print(winningDeck)
-        calculateScore(winningDeck)
+        (winner, deck1, deck2 ) = playGame(player1Dec,player2Dec)
+        if winner == 0:
+            print(deck1)
+            calculateScore(deck1)
+        elif winner == 1:
+            print(deck2)
+            calculateScore(deck2)
 
 if __name__ == '__main__':
     unittest.main()

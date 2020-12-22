@@ -24,11 +24,14 @@ def subGame(playerACard,playerBCard,playerADeck,playerBDeck):
 
 
 def playRound(playerADeck,playerBDeck):
+    
+    printing = False
     playerACard = playerADeck.pop(0)
     playerBCard = playerBDeck.pop(0)
 
-    print("Player 1 plays: %d"%playerACard)
-    print("Player 2 plays: %d"%playerBCard)
+    if printing:
+        print("Player 1 plays: %d"%playerACard)
+        print("Player 2 plays: %d"%playerBCard)
     # If both players have at least as many cards remaining in their deck as the value of the card they just drew,
     # the winner of the round is determined by playing a new game of Recursive Combat (see below).
     remainingCardCountForPlayerA = len(playerADeck)
@@ -39,14 +42,17 @@ def playRound(playerADeck,playerBDeck):
     winner = 0
 
     if playerACanRecurse and playerBCanRecurse:
-        print("Playing a sub-game to determine the winner...")
+        if printing:
+            print("Playing a sub-game to determine the winner...")
         winner = subGame(playerACard,playerBCard,playerADeck,playerBDeck)
     else:
         if playerACard > playerBCard:
-            print("Player A wins %d > %d"%(playerACard,playerBCard))
+            if printing:
+                print("Player A wins %d > %d"%(playerACard,playerBCard))
             winner = 0
         elif playerBCard > playerACard:
-            print("Player B wins %d > %d"%(playerBCard,playerACard))
+            if printing:
+                print("Player B wins %d > %d"%(playerBCard,playerACard))
             winner = 1
 
 
@@ -63,18 +69,22 @@ def playRound(playerADeck,playerBDeck):
 
 def playGame(playerADeck,playerBDeck):
     
-    print("=== Game n ===")
+    printing = False
+    if printing:
+        print("=== Game n ===")
     previousRounds = []
     round = 0
     while len(playerADeck) > 0 and len(playerBDeck) > 0:
         round = round + 1
         
-        print("-- Round %d (Game n) --"%(round))
-        print("Player 1's deck:",playerADeck)
-        print("Player 2's deck:",playerBDeck)
+        if printing:
+            print("-- Round %d (Game n) --"%(round))
+            print("Player 1's deck:",playerADeck)
+            print("Player 2's deck:",playerBDeck)
     
         if (playerADeck,playerBDeck) in previousRounds:
-            print(" ** Player 1 wins to prevent infinite game! **")
+            if printing:
+                print(" ** Player 1 wins to prevent infinite game! **")
             return (0,[],[]) # player A one, ignore decks
         # Before either player deals a card, 
         # if there was a previous round in this game that had exactly the same cards in the same order in the same players' decks,
@@ -85,15 +95,19 @@ def playGame(playerADeck,playerBDeck):
         winner = playRound(playerADeck,playerBDeck)
 
         if winner == 0:
-            print("Player 1 wins round %d"%(round))
+            if printing:
+                print("Player 1 wins round %d"%(round))
         elif winner == 1:
-            print("Player 2 wins round %d"%(round))
+            if printing:
+                print("Player 2 wins round %d"%(round))
     
     if len(playerADeck) == 0:
-        print("player2 won game")
+        if printing:
+            print("player2 won game")
         return (1,playerADeck,playerBDeck)
     elif len(playerBDeck) == 0:
-        print("player1 won game")
+        if printing:
+            print("player1 won game")
         return (0,playerADeck,playerBDeck)
     
     assert False
