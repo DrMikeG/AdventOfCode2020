@@ -31,10 +31,22 @@ class TestStringMethods(unittest.TestCase):
         for n in range(10,1000001):
             cupCircle.append(n)
         self.assertEqual(len(cupCircle),1000000)
-        
+
+        copyCircle = cupCircle.copy()
+
+        gameTracker = []
+
         currentCupIndex = 0
         for m in range(1000000):
+
+            #game = (cupCircle,currentCupIndex)
+            if cupCircle == copyCircle:
+                print("Loops at %d"%(m))
+            #else:
+            #    gameTracker.append( game )
             singleTurn(cupCircle,currentCupIndex,m+1)
+
+
             currentCupIndex = nextCurrentCupIndex(cupCircle,currentCupIndex)
         answer = getAnswer(cupCircle)
         self.assertEqual(len(answer),2)
