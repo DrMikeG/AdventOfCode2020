@@ -84,7 +84,7 @@ def processInputFile(filePath):
 
     count = countBlack(tiles)
     print(count)
-    return count
+    return
 
 def getInputPath():
     return os.path.join(os.path.dirname(__file__),"input.txt")
